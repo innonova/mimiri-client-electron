@@ -1,5 +1,5 @@
 const shell = require('shelljs');
-const { readFileSync, writeFileSync } = require('node:fs');
+const { readFileSync, writeFileSync, readdirSync } = require('node:fs');
 
 const package = JSON.parse(readFileSync('./package.json'))
 

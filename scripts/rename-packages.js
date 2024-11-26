@@ -17,7 +17,7 @@ if (process.platform === 'linux') {
 	], undefined, '  '))
 }
 
-if (process.platform === 'windows') {
+if (process.platform === 'win32') {
 	const electronWinInstallerPath = './out/make/squirrel.windows/x64'
 	const artifacts = []
 	for (const file of readdirSync(electronWinInstallerPath)) {

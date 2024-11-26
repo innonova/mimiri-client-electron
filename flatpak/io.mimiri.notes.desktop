@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Mimiri Notes
+Exec=run.sh %U
+Terminal=false
+Type=Application
+Icon=io.mimiri.notes
+StartupWMClass=mimirinotes
+Comment=Secure Notes
+Categories=Office

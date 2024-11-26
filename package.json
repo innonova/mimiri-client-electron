@@ -1,0 +1,59 @@
+{
+  "name": "mimiri-notes",
+  "productName": "Mimiri Notes",
+  "version": "2.0.3",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron-forge start -- --hidden",
+    "update-bundle": "node scripts/update-bundle.js",
+    "download-bundle": "node scripts/download-bundle.js",
+    "unpack-bundle": "node scripts/unpack-bundle.js",
+    "dist": "electron-builder",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "postinstall": "electron-builder install-app-deps",
+    "make-iconset": "cd assets && iconutil -c icns icon.iconset",
+    "make-background": "cd assets && tiffutil -cathidpicheck dmg-background.png dmg-background@2x.png -out background.tiff",
+    "rename-packages": "node scripts/rename-packages.js"
+  },
+  "author": "Innonova GmbH",
+  "license": "mimiri",
+  "description": "Mimiri Notes",
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1",
+    "promised-sqlite3": "^2.1.0",
+    "shelljs": "^0.8.5",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.4.0",
+    "@electron-forge/maker-deb": "^7.4.0",
+    "@electron-forge/maker-dmg": "^7.5.0",
+    "@electron-forge/maker-flatpak": "^7.5.0",
+    "@electron-forge/maker-rpm": "^7.4.0",
+    "@electron-forge/maker-snap": "^7.5.0",
+    "@electron-forge/maker-squirrel": "^7.4.0",
+    "@electron-forge/maker-zip": "^7.4.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
+    "@electron-forge/plugin-fuses": "^7.4.0",
+    "@electron/fuses": "^1.8.0",
+    "electron": "^32.0.2",
+    "electron-builder": "^25.1.8",
+    "electron-rebuild": "^3.2.9",
+    "js-yaml": "^4.1.0"
+  },
+  "build": {
+    "icon": "assets/icon.png",
+    "snap": {
+      "autoStart": true,
+      "category": "Office;Development"
+    },
+    "files": [
+      "app",
+      "*.js",
+      "package.json",
+      "assets/icon.png",
+      "assets/tray-icon.png"
+    ]
+  }
+}

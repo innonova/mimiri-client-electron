@@ -1,0 +1,57 @@
+app-id: io.mimiri.notes
+runtime: org.freedesktop.Platform
+runtime-version: "23.08"
+sdk: org.freedesktop.Sdk
+base: org.electronjs.Electron2.BaseApp
+base-version: "23.08"
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.node18
+command: run.sh
+separate-locales: false
+finish-args:
+  - "--share=ipc"
+  - "--socket=x11"
+  - "--share=network"
+  - "--filesystem=~/.config/autostart:create"
+  - "--filesystem=~/.mimiri:create"
+  - "--filesystem=xdg-data:create"
+  - "--filesystem=xdg-config:create"
+  - "--socket=system-bus"
+build-options:
+  append-path: /usr/lib/sdk/node18/bin
+  env:
+    NPM_CONFIG_LOGLEVEL: info
+modules:
+  - name: mimiri-notes
+    buildsystem: simple
+    build-options:
+      env:
+        XDG_CACHE_HOME: /run/build/mimiri-notes/flatpak-node/cache
+        npm_config_cache: /run/build/mimiri-notes/flatpak-node/npm-cache
+        npm_config_offline: "true"
+    build-commands:
+      - npm install --offline
+      - npm run unpack-bundle -- ../bundle.json
+      - |
+        . ../flatpak-node/electron-builder-arch-args.sh
+        npm run dist -- $ELECTRON_BUILDER_ARCH_ARGS  --linux --dir
+      - cp -a dist/linux*unpacked /app/main
+      - install -Dm755 -t /app/bin/ ../run.sh
+      - install -Dm644 flatpak/io.mimiri.notes.appdata.xml -t /app/share/metainfo/
+      - install -Dm755 flatpak/io.mimiri.notes.desktop -t /app/share/applications/
+      - install -Dm644 assets/hicolor/256x256/io.mimiri.notes.png -t /app/share/icons/hicolor/256x256/apps/
+      - install -Dm644 assets/hicolor/512x512/io.mimiri.notes.png -t /app/share/icons/hicolor/256x256/apps/
+    subdir: main
+    sources:
+      - type: file
+        url: https://update.mimiri.io/2024101797F6C918.2.0.3.json
+        sha256: ada04ff0c34febe4df32bec3f8c14e06f447aa80d55fa5301f25f9f15954ac0d
+        dest-filename: bundle.json
+      - type: dir
+        path: ..
+        dest: main
+      - generated-sources.json
+      - type: script
+        dest-filename: run.sh
+        commands:
+          - zypak-wrapper.sh /app/main/mimiri-notes "$@"

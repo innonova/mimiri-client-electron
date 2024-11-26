@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Mimiri Notes
+Exec=sh ./run.sh
+Terminal=false
+Type=Application
+Icon=./resources/hicolor/512x512/mimiri-notes.png
+StartupWMClass=mimirinotes
+Comment=Secure Notes
+Categories=Office

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>io.mimiri.notes</id>
+  <name>Mimiri Notes</name>
+  <summary>Mimiri Notes</summary>
+
+  <launchable type="desktop-id">io.mimiri.notes.desktop</launchable>
+
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>GPL-2.0-or-later</project_license>
+
+  <description>
+    <p>Mimiri Notes</p>
+  </description>
+
+  <url type="bugtracker">https://github.com/innonova/mimiri-notes/issues</url>
+  <url type="homepage">https://mimiri.io</url>
+
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+    <control>touch</control>
+  </recommends>
+
+  <content_rating type="oars-1.1">
+  </content_rating>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://mimiri.io/mimiri-white.png</image>
+      <caption>Light mode</caption>
+    </screenshot>
+  </screenshots>
+
+  <releases>
+    <release version="1.0.0" date="2024-11-23">
+      <description>
+        <p>Initial Release</p>
+      </description>
+    </release>
+  </releases>
+
+  <developer_name>innonova GmbH</developer_name>
+  <update_contact>mimiri@innonova.ch</update_contact>
+</component>

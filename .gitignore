@@ -3,3 +3,4 @@ app/
 dist/
 out/
 .env
+bundle.json

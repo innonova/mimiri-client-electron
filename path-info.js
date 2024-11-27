@@ -95,7 +95,7 @@ class PathInfo {
 			return path.join(__dirname, 'assets', 'icon.png');
 		}
 		if (process.platform === 'darwin') {
-			return path.join(__dirname, 'assets', 'icon.png');
+			return path.join(__dirname, 'assets', 'trayTemplate.png');
 		}
 		if (process.platform === 'linux') {
 			return path.join(__dirname, 'assets', 'tray-icon.png');

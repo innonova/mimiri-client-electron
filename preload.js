@@ -21,11 +21,15 @@ contextBridge.exposeInMainWorld(
 		},
 		menu: {
 			quit: () => ipcRenderer.send('menu-quit'),
+			show: () => ipcRenderer.send('menu-show'),
 			showDevTools: () => ipcRenderer.send('menu-show-dev-tools'),
 			setTheme: (theme) => ipcRenderer.send('menu-set-theme', theme),
 			setScreenSharing: (value) => ipcRenderer.send('menu-set-screen-sharing', value),
 			onToggleScreenSharing: (callback) => ipcRenderer.on('toggle-screen-sharing', () => callback()),
 			onToggleOpenAtLogin: (callback) => ipcRenderer.on('toggle-open-at-login', () => callback()),
+			setAppMenu: (value) => ipcRenderer.send('set-app-menu', value),
+			seTrayMenu: (value) => ipcRenderer.send('set-tray-menu', value),
+			onMenuItemActivated: (callback) => ipcRenderer.on('menu-item-activated', (_sender, menuItemId) => callback(menuItemId)),
 		},
 		settings: {
 			load: () => ipcRenderer.invoke('settings-load'),

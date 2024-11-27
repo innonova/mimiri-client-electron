@@ -12,12 +12,22 @@ const build = {
 	},
 	rebuildConfig: {},
 	makers: [
-		{
-			name: '@electron-forge/maker-squirrel',
-			config: {
-				setupIcon: path.resolve(__dirname, 'assets/icon.ico')
-			},
-		}
+		...(process.platform === 'darwin' ? [
+			{
+				name: '@electron-forge/maker-dmg',
+				config: {
+					icon: './assets/icon.icns',
+					background: './assets/background.tiff',
+					format: 'ULFO'
+				}
+			}] : []),
+		...(process.platform === 'win32' ? [
+			{
+				name: '@electron-forge/maker-squirrel',
+				config: {
+					setupIcon: path.resolve(__dirname, 'assets/icon.ico')
+				},
+			}] : []),
 	],
 	plugins: [
 		{

@@ -3,6 +3,7 @@ const { app, ipcMain } = require('electron');
 const { OfflineManager } = require('./offline-manager');
 const { SettingManager } = require('./settings-manager');
 const { BundleManager } = require('./bundle-manager');
+const { MenuManager } = require('./menu-manager');
 
 class MimerIpcClient {
 
@@ -10,6 +11,7 @@ class MimerIpcClient {
 		this.host = host;
 		this.offlineManager = new OfflineManager();
 		this.bundleManager = new BundleManager();
+		this.menuManager = new MenuManager(this);
 	}
 
 	validateSender(frame) {
@@ -20,13 +22,12 @@ class MimerIpcClient {
 
 	appReady() {
 		this.bundleManager.appReady()
+		this.menuManager.appReady()
 	}
 
-	init(mainWindow, trayContextMenu, tray, startupManager) {
+	init(mainWindow, startupManager) {
 		this.mainWindow = mainWindow;
-		this.trayContextMenu = trayContextMenu;
-		this.tray = tray;
-		this.settingsManager = new SettingManager(mainWindow, trayContextMenu, tray, startupManager);
+		this.settingsManager = new SettingManager(mainWindow, startupManager);
 
 		ipcMain.handle('cache-set-test-id', (e, testId) => {
 			if (!this.validateSender(e.senderFrame)) return null;
@@ -105,9 +106,12 @@ class MimerIpcClient {
 
 		ipcMain.on('menu-show-dev-tools', (e, value) => {
 			if (!this.validateSender(e.senderFrame)) return
-			if (!app.isPackaged) {
-				this.mainWindow.webContents.openDevTools();
-			}
+			this.mainWindow.webContents.openDevTools();
+		});
+
+		ipcMain.on('menu-show', (e, value) => {
+			if (!this.validateSender(e.senderFrame)) return
+			this.mainWindow.show();
 		});
 
 		ipcMain.handle('settings-load', (e) => {
@@ -155,6 +159,19 @@ class MimerIpcClient {
 			return this.bundleManager.updateElectron();
 		});
 
+		ipcMain.on('set-app-menu', (e, value) => {
+			if (!this.validateSender(e.senderFrame)) return
+			return this.menuManager.setAppMenu(value);
+		});
+
+		ipcMain.on('set-tray-menu', (e, value) => {
+			if (!this.validateSender(e.senderFrame)) return
+			return this.menuManager.setTrayMenu(value);
+		});
+	}
+
+	menuItemActivated(menuItemId) {
+		this.mainWindow.webContents.send('menu-item-activated', menuItemId);
 	}
 
 	toggleScreenSharing() {

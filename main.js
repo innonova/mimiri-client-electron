@@ -126,26 +126,7 @@ if (!gotTheLock) {
 		])
 
 
-		try {
-			tray = new Tray(pathInfo.trayIcon)
-
-			tray.setToolTip('Mimiri Notes')
-			tray.setContextMenu(trayContextMenu)
-			tray.on('double-click', () => {
-				mainWindow.show();
-			})
-			if (process.platform === 'linux') {
-				tray.on('click', () => {
-					mainWindow.show();
-				})
-			}
-		} catch (ex) {
-			console.log('tray error', ex);
-		}
-
-
-
-		mimerIpcClient.init(mainWindow, trayContextMenu, tray, startupManager)
+		mimerIpcClient.init(mainWindow, trayContextMenu, startupManager)
 
 
 

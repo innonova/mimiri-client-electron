@@ -4,10 +4,8 @@ const path = require('node:path');
 const { pathInfo } = require('./path-info');
 
 class SettingManager {
-	constructor(mainWindow, trayContextMenu, tray, startupManager) {
+	constructor(mainWindow, startupManager) {
 		this.mainWindow = mainWindow;
-		this.trayContextMenu = trayContextMenu;
-		this.tray = tray;
 		this.startup = startupManager;
 	}
 
@@ -33,21 +31,15 @@ class SettingManager {
 		const settingPath = this.getPath();
 		this.startup.enabled = settings.openAtLogin;
 
-		this.mainWindow.setTitleBarOverlay({
-			color: settings.titleBarColor,
-			symbolColor: settings.titleBarSystemColor,
-			height: settings.titleBarHeight
-		});
+		if (this.mainWindow.setTitleBarOverlay) {
+			this.mainWindow.setTitleBarOverlay({
+				color: settings.titleBarColor,
+				symbolColor: settings.titleBarSystemColor,
+				height: settings.titleBarHeight
+			});
+		}
 
 		this.mainWindow.setContentProtection(!settings.allowScreenSharing);
-
-		const screenSharingItem = this.trayContextMenu.items.find(item => item.id === 'allow-screen-sharing')
-		if (screenSharingItem) {
-			screenSharingItem.checked = settings.allowScreenSharing;
-		}
-		this.trayContextMenu.items.find(item => item.id === 'open-at-login').checked = settings.openAtLogin;
-
-		this.tray.setContextMenu(this.trayContextMenu);
 
 		try {
 			writeFileSync(settingPath, JSON.stringify(settings, undefined, '  '));

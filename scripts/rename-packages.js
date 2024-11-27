@@ -31,3 +31,14 @@ if (process.platform === 'win32') {
 	}
 	writeFileSync('./artifacts.json', JSON.stringify(artifacts, undefined, '  '))
 }
+
+if (process.platform === 'darwin') {
+	const electronWinInstallerPath = './out/make'
+	const artifacts = []
+	for (const file of readdirSync(electronWinInstallerPath)) {
+		if (file.endsWith('.dmg')) {
+			artifacts.push(Path.join(electronWinInstallerPath, file))
+		}
+	}
+	writeFileSync('./artifacts.json', JSON.stringify(artifacts, undefined, '  '))
+}

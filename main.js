@@ -126,7 +126,7 @@ if (!gotTheLock) {
 		])
 
 
-		mimerIpcClient.init(mainWindow, trayContextMenu, startupManager)
+		mimerIpcClient.init(mainWindow, startupManager)
 
 
 

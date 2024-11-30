@@ -6,9 +6,23 @@ const path = require('node:path');
 
 const build = {
 	packagerConfig: {
+		appBundleId: 'io.mimiri.notes',
+		name: 'Mimiri Notes',
 		asar: true,
 		icon: path.resolve(__dirname, 'assets', 'icon'),
-		executableName: 'mimiri-notes'
+		executableName: 'mimiri-notes',
+		osxSign: {
+			identity: process.env.MAC_SIGN_IDENT,
+			hardenedRuntime: true,
+			entitlements: "entitlements.plist",
+			entitlementsInherit: "entitlements.plist",
+			verbose: true,
+		},
+		osxNotarize: {
+			appleId: process.env.MAC_NOTARIZE_APPLE_ID,
+			appleIdPassword: process.env.MAC_NOTARIZE_APPLE_ID_PASSWORD,
+			teamId: process.env.MAC_NOTARIZE_TEAM_ID
+		}
 	},
 	rebuildConfig: {},
 	makers: [

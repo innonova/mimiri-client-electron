@@ -10,7 +10,7 @@
     "unpack-bundle": "node scripts/unpack-bundle.js",
     "dist": "electron-builder",
     "package": "electron-forge package",
-    "make": "DEBUG=electron-notarize*,electron-osx-sign* electron-forge make",
+    "make": "electron-forge make",
     "postinstall": "electron-builder install-app-deps",
     "make-iconset": "cd assets && iconutil -c icns icon.iconset",
     "make-background": "cd assets && tiffutil -cathidpicheck dmg-background.png dmg-background@2x.png -out background.tiff",

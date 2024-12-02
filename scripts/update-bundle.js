@@ -47,7 +47,7 @@ const verify = async (name, data) => {
 
 const execute = async () => {
 	const keyName = '2024101797F6C918';
-	const latest = await fetch(`https://update.mimiri.io/${keyName}.latest.json`).then(res => res.json())
+	const latest = await fetch(`https://update.mimiri.io/${keyName}.canary.json`).then(res => res.json())
 	const bundleUrl = `https://update.mimiri.io/${keyName}.${latest.version}.json`
 	shell.exec(`curl ${bundleUrl} -o ./bundle.json`)
 	const bundle = JSON.parse(await readFile('./bundle.json'));
@@ -66,23 +66,20 @@ const execute = async () => {
 				lineWidth: -1,
 				quotingType: '"',
 			}))
-
-			const pack = JSON.parse(await readFile('./package.json'))
-			const baseVersionJs = `
-			module.exports = {
-				baseVersion: '${latest.version}',
-				hostVersion: '${pack.version}',
-				releaseDate: '${bundle.releaseDate}',
-			}
-			`
-			await writeFile('./base-version.js', baseVersionJs)
-
-
-
 			console.log('Updated bundle to', latest.version);
 		} else {
 			console.log('Already on latest', latest.version);
 		}
+
+		const pack = JSON.parse(await readFile('./package.json'))
+		const baseVersionJs = `
+		module.exports = {
+			baseVersion: '${latest.version}',
+			hostVersion: '${pack.version}',
+			releaseDate: '${bundle.releaseDate}',
+		}
+		`
+		await writeFile('./base-version.js', baseVersionJs)
 	}
 }
 

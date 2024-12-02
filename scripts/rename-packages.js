@@ -1,6 +1,7 @@
 const shell = require('shelljs');
 const { readFileSync, writeFileSync, readdirSync, statSync } = require('node:fs');
 const Path = require('node:path');
+const { fromUint8Array } = require('js-base64');
 
 const run = async () => {
 

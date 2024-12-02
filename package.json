@@ -40,6 +40,7 @@
     "electron": "^32.0.2",
     "electron-builder": "^25.1.8",
     "electron-rebuild": "^3.2.9",
+    "js-base64": "^3.7.7",
     "js-yaml": "^4.1.0"
   },
   "build": {

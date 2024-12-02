@@ -1,5 +1,5 @@
 const shell = require('shelljs');
-const { readFileSync, writeFileSync, readdirSync, statSync } = require('node:fs');
+const { readFileSync, writeFileSync, readdirSync, statSync, lstatSync } = require('node:fs');
 const Path = require('node:path');
 const { fromUint8Array } = require('js-base64');
 
@@ -96,11 +96,17 @@ const run = async () => {
 	if (process.platform === 'darwin') {
 		const electronWinInstallerPath = './out/make'
 		const artifacts = []
-		for (const file of readdirSync(electronWinInstallerPath)) {
-			if (file.endsWith('.dmg')) {
-				artifacts.push(Path.join(electronWinInstallerPath, file))
+		const recurseDirs = (path) => {
+			for (const file of readdirSync(path)) {
+				const itemPath = Path.join(path, file)
+				if (lstatSync(itemPath).isDirectory()) {
+					recurseDirs(itemPath)
+				} else if (file.endsWith('.dmg') || file.endsWith('.zip')) {
+					artifacts.push(Path.join(path, file))
+				}
 			}
 		}
+		recurseDirs(electronWinInstallerPath)
 		writeFileSync('./artifacts.json', JSON.stringify(artifacts, undefined, '  '))
 	}
 

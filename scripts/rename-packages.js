@@ -51,7 +51,7 @@ const run = async () => {
 			return fromBase64(encoded)
 		}
 
-		const privatePem = readFileSync(`./certs/${bundleKey}.key`).toString()
+		const privatePem = readFileSync(process.env.CERT_PATH, `${bundleKey}.key`).toString()
 
 		const privateKey = await crypto.subtle.importKey(
 			'pkcs8',

@@ -56,13 +56,13 @@ class PathInfo {
 			return path.join(__dirname.replace('\\app.asar', ''), 'bundles')
 		}
 		if (process.platform === 'darwin') {
-			return path.join(__dirname.replace('\\app.asar', ''), 'bundles')
+			return path.join(app.getPath('home'), '.mimiri', 'bundles')
 		}
 		if (process.platform === 'linux') {
 			if (this.isFlatpak) {
 				return path.join(process.env.XDG_DATA_HOME, 'bundles');
 			}
-			return path.join(__dirname.replace('\\app.asar', ''), 'bundles')
+			return path.join(app.getPath('home'), '.mimiri', 'bundles')
 		}
 	}
 

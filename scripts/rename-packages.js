@@ -165,6 +165,7 @@ const run = async () => {
 			}
 		}
 		await recurseDirs(electronWinInstallerPath)
+		writeFileSync(releasePath, JSON.stringify(releaseJson));
 		writeFileSync('./artifacts.json', JSON.stringify(artifacts, undefined, '  '))
 	}
 

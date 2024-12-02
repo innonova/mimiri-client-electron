@@ -19,8 +19,18 @@ if (process.platform === 'linux') {
 }
 
 if (process.platform === 'win32') {
+	const bundleKey = '2024101797F6C918'
 	const electronWinInstallerPath = './out/make/squirrel.windows/x64'
-	const artifacts = []
+	const releaseJson = {
+		release: readFileSync(Path.join(electronWinInstallerPath, "RELEASES")).toString().replace(/^\uFEFF/, ''),
+		size: 0,
+		signatureKey: bundleKey,
+		signature: ''
+	}
+	const releasePath = Path.join(outPath, `electron-win.${vuePackage.version}.json`);
+	writeFileSync(releasePath, JSON.stringify(releaseJson));
+
+	const artifacts = [releasePath]
 	for (const file of readdirSync(electronWinInstallerPath)) {
 		if (file.endsWith('.exe')) {
 			artifacts.push(Path.join(electronWinInstallerPath, file))

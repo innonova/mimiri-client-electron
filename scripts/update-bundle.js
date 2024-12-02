@@ -66,6 +66,19 @@ const execute = async () => {
 				lineWidth: -1,
 				quotingType: '"',
 			}))
+
+			const pack = JSON.parse(await readFile('./package.json'))
+			const baseVersionJs = `
+			module.exports = {
+				baseVersion: '${latest.version}',
+				hostVersion: '${pack.version}',
+				releaseDate: '${bundle.releaseDate}',
+			}
+			`
+			await writeFile('./base-version.js', baseVersionJs)
+
+
+
 			console.log('Updated bundle to', latest.version);
 		} else {
 			console.log('Already on latest', latest.version);

@@ -28,6 +28,7 @@ class MimerIpcClient {
 	init(mainWindow, startupManager) {
 		this.mainWindow = mainWindow;
 		this.settingsManager = new SettingManager(mainWindow, startupManager);
+		this.bundleManager.init(mainWindow);
 
 		ipcMain.handle('cache-set-test-id', (e, testId) => {
 			if (!this.validateSender(e.senderFrame)) return null;

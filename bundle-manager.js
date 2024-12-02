@@ -87,9 +87,14 @@ class BundleManager {
 
 		autoUpdater.on('update-downloaded', () => {
 			if (this.doInstallUpdate) {
+				this.mainWindow.removeAllListeners('close')
 				autoUpdater.quitAndInstall()
 			}
 		})
+	}
+
+	init(mainWindow) {
+		this.mainWindow = mainWindow;
 	}
 
 	appReady() {
@@ -204,9 +209,9 @@ class BundleManager {
 				mkdirSync(this.updateTempDir);
 			}
 			await writeFile(Path.join(this.updateTempDir, 'releases.json'), JSON.stringify({
-				url: `file://${Path.join(this.updateTempDir, 'update.zip')}`
+				url: `file://${Path.join(this.updateTempDir, release)}`
 			}));
-			await writeFile(Path.join(this.updateTempDir, 'update.zip'), data);
+			await writeFile(Path.join(this.updateTempDir, release), data);
 		}
 	}
 

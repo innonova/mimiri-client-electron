@@ -135,6 +135,4 @@ if (!gotTheLock) {
 		})
 	})
 
-	app.on('window-all-closed', () => {
-	})
 }

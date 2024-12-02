@@ -27,7 +27,7 @@ if (process.platform === 'win32') {
 		signatureKey: bundleKey,
 		signature: ''
 	}
-	const releasePath = Path.join(outPath, `electron-win.${vuePackage.version}.json`);
+	const releasePath = Path.join(electronWinInstallerPath, `electron-win.${vuePackage.version}.json`);
 	writeFileSync(releasePath, JSON.stringify(releaseJson));
 
 	const artifacts = [releasePath]

@@ -95,18 +95,33 @@ const run = async () => {
 
 	if (process.platform === 'darwin') {
 		const electronWinInstallerPath = './out/make'
-		const artifacts = []
-		const recurseDirs = (path) => {
+
+		const releaseJson = {
+			release: '',
+			size: 0,
+			signatureKey: bundleKey,
+			signature: ''
+		}
+		// TODO get the right version here
+		const releasePath = Path.join(electronWinInstallerPath, `electron-darwin.${package.version}.json`);
+
+		const artifacts = [releasePath]
+		const recurseDirs = async (path) => {
 			for (const file of readdirSync(path)) {
 				const itemPath = Path.join(path, file)
 				if (lstatSync(itemPath).isDirectory()) {
-					recurseDirs(itemPath)
+					await recurseDirs(itemPath)
 				} else if (file.endsWith('.dmg') || file.endsWith('.zip')) {
-					artifacts.push(Path.join(path, file))
+					const zipPath = Path.join(path, file);
+					artifacts.push(zipPath)
+					var stats = statSync(zipPath);
+					releaseJson.release = file
+					releaseJson.size = stats.size;
+					releaseJson.signature = toBase64(await crypto.subtle.sign('RSASSA-PKCS1-v1_5', privateKey, readFileSync(zipPath)))
 				}
 			}
 		}
-		recurseDirs(electronWinInstallerPath)
+		await recurseDirs(electronWinInstallerPath)
 		writeFileSync('./artifacts.json', JSON.stringify(artifacts, undefined, '  '))
 	}
 

@@ -191,19 +191,36 @@ class BundleManager {
 	}
 
 	async saveElectronUpdate(release, data) {
-		this.updateTempDir = Path.join(pathInfo.temp, "MimiriUpdate")
-		if (!existsSync(this.updateTempDir)) {
-			mkdirSync(this.updateTempDir);
+		if (process.platform === 'win32') {
+			this.updateTempDir = Path.join(pathInfo.temp, "MimiriUpdate")
+			if (!existsSync(this.updateTempDir)) {
+				mkdirSync(this.updateTempDir);
+			}
+			await writeFile(Path.join(this.updateTempDir, 'RELEASES'), release);
+			await writeFile(Path.join(this.updateTempDir, release.split(' ')[1]), data);
+		} else if (process.platform === 'darwin') {
+			this.updateTempDir = Path.join(pathInfo.temp, "MimiriUpdate")
+			if (!existsSync(this.updateTempDir)) {
+				mkdirSync(this.updateTempDir);
+			}
+			await writeFile(Path.join(this.updateTempDir, 'releases.json'), JSON.stringify({
+				url: `file://${Path.join(this.updateTempDir, 'update.zip')}`
+			}));
+			await writeFile(Path.join(this.updateTempDir, 'update.zip'), data);
 		}
-		await writeFile(Path.join(this.updateTempDir, 'RELEASES'), release);
-		await writeFile(Path.join(this.updateTempDir, release.split(' ')[1]), data);
 	}
 
 	async updateElectron() {
 		try {
-			this.doInstallUpdate = true
-			autoUpdater.setFeedURL(this.updateTempDir);
-			autoUpdater.checkForUpdates();
+			if (process.platform === 'win32') {
+				this.doInstallUpdate = true
+				autoUpdater.setFeedURL(this.updateTempDir);
+				autoUpdater.checkForUpdates();
+			} else if (process.platform === 'darwin') {
+				this.doInstallUpdate = true
+				autoUpdater.setFeedURL({ url: `file://${Path.join(this.updateTempDir, 'releases.json')}` });
+				autoUpdater.checkForUpdates();
+			}
 		} catch (ex) {
 			console.log(ex);
 		}

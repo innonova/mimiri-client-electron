@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["Mimiri"]
+  "cSpell.words": ["Mimiri"],
+  "window.title": "${dirty}Electron Client"
 }

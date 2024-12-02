@@ -1,7 +1,7 @@
 {
   "name": "mimiri-notes",
   "productName": "Mimiri Notes",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "main": "main.js",
   "scripts": {
     "start": "electron-forge start -- --hidden",
@@ -33,7 +33,7 @@
     "@electron-forge/maker-rpm": "^7.4.0",
     "@electron-forge/maker-snap": "^7.5.0",
     "@electron-forge/maker-squirrel": "^7.4.0",
-    "@electron-forge/maker-zip": "^7.4.0",
+    "@electron-forge/maker-zip": "^7.6.0",
     "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
     "@electron-forge/plugin-fuses": "^7.4.0",
     "@electron/fuses": "^1.8.0",

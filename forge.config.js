@@ -34,6 +34,9 @@ const build = {
 					background: './assets/background.tiff',
 					format: 'ULFO'
 				}
+			},
+			{
+				name: '@electron-forge/maker-zip',
 			}] : []),
 		...(process.platform === 'win32' ? [
 			{

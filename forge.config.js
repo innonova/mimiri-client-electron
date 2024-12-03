@@ -10,7 +10,7 @@ const build = {
 		name: 'Mimiri Notes',
 		asar: true,
 		icon: path.resolve(__dirname, 'assets', 'icon'),
-		executableName: 'mimiri-notes',
+		executableName: process.platform === 'win32' ? 'Mimiri Notes' : 'mimiri-notes',
 		osxSign: {
 			identity: process.env.MAC_SIGN_IDENT,
 			hardenedRuntime: true,

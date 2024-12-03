@@ -44,7 +44,15 @@ class BundleManager {
 			return labelTypeA === 'rc' ? 1 : -1
 		}
 		if (labelA !== labelB) {
-			return labelA - labelB
+			if (!isNaN(labelA) && !isNaN(labelA)) {
+				return labelA - labelB
+			}
+			if (!isNaN(labelA) && isNaN(labelA)) {
+				return 1
+			}
+			if (isNaN(labelA) && !isNaN(labelA)) {
+				return -1
+			}
 		}
 		return 0
 	}

@@ -44,8 +44,8 @@ modules:
     subdir: main
     sources:
       - type: file
-        url: https://update.mimiri.io/2024101797F6C918.2.1.0.json
-        sha256: 08b5ecad946ee09fa08fb07441956ed1cc39886e466c6b2c15f6ae3688ca8f03
+        url: https://update.mimiri.io/2024101797F6C918.2.1.1.json
+        sha256: c4940069c102c9a01113184c3d2cf85078f29597c4b6762562d512385fe135c0
         dest-filename: bundle.json
       - type: dir
         path: ..

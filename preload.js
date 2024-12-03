@@ -1,5 +1,30 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
+function isFlatpak() {
+	return process.platform === 'linux' && process.env.container === 'flatpak';
+}
+
+function isSnap() {
+	return process.platform === 'linux' && !!process.env.SNAP;
+}
+
+function isAppImage() {
+	return process.platform === 'linux' && !!process.env.APPIMAGE;
+}
+
+function isFlatHub() {
+	return false;
+}
+
+function isSnapStore() {
+	return false;
+}
+
+function isTarGz() {
+	return process.platform === 'linux' && !isFlatpak() && !isSnap() && !isAppImage();
+}
+
+
 contextBridge.exposeInMainWorld(
 	'mimiri',
 	{
@@ -44,6 +69,12 @@ contextBridge.exposeInMainWorld(
 			saveElectronUpdate: (release, data) => ipcRenderer.send('bundle-save-electron-update', release, data),
 			updateElectron: () => ipcRenderer.send('bundle-update-electron'),
 		},
-		platform: process.platform
+		platform: process.platform,
+		isFlatpak: isFlatpak(),
+		isSnap: isSnap(),
+		isAppImage: isAppImage(),
+		isTarGz: isTarGz(),
+		isFlatHub: isFlatHub(),
+		isSnapStore: isSnapStore()
 	}
 )

@@ -10,15 +10,27 @@ class PathInfo {
 	}
 
 	get isFlatpak() {
-		return process.env.container === 'flatpak';
+		return process.platform === 'linux' && process.env.container === 'flatpak';
 	}
 
 	get isSnap() {
-		return !!process.env.SNAP;
+		return process.platform === 'linux' && !!process.env.SNAP;
 	}
 
 	get isAppImage() {
-		return !!process.env.APPIMAGE;
+		return process.platform === 'linux' && !!process.env.APPIMAGE;
+	}
+
+	get isFlatHub() {
+		return false;
+	}
+
+	get isSnapStore() {
+		return false;
+	}
+
+	get isTarGz() {
+		return process.platform === 'linux' && !this.isFlatpak && !this.isSnap && !this.isAppImage;
 	}
 
 	get settings() {

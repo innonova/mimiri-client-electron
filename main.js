@@ -17,7 +17,7 @@ if (!gotTheLock) {
 	// const host = devMode ? 'http://localhost:5173/' : 'app://app.mimernotes.com/'
 	// const hostName = devMode ? 'localhost:5173' : 'app.mimernotes.com'
 
-	const mimerIpcClient = new MimerIpcClient(hostName);
+	const mimerIpcClient = new MimerIpcClient(hostName, devMode);
 	const startupManager = new StartupManager()
 	let mainWindow = undefined
 	let isAppQuitting = false;

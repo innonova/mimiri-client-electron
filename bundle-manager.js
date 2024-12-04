@@ -57,7 +57,8 @@ class BundleManager {
 		return 0
 	}
 
-	constructor() {
+	constructor(devMode) {
+		this.devMode = devMode
 		this.doInstallUpdate = false
 		this.configPath = Path.join(pathInfo.bundles, 'config.json');
 		this.config = {
@@ -125,21 +126,23 @@ class BundleManager {
 			base: true,
 			description: 'base',
 			releaseDate,
-			active: this.config.activeVersion === 'base',
-			previous: this.config.previousActiveVersion === 'base',
+			active: this.config.activeVersion === 'base' || this.devMode,
+			previous: this.config.previousActiveVersion === 'base' || this.devMode,
 		}]
-		for (const item of await readdir(pathInfo.bundles)) {
-			const infoPath = Path.join(pathInfo.bundles, item, 'info.json');
-			if (existsSync(infoPath)) {
-				const info = JSON.parse(await readFile(infoPath))
-				if (info.version !== baseVersion) {
-					bundles.push({
-						...info,
-						hostVersion,
-						base: false,
-						active: this.config.activeVersion === info.version,
-						previous: this.config.previousActiveVersion === info.version,
-					})
+		if (!this.devMode) {
+			for (const item of await readdir(pathInfo.bundles)) {
+				const infoPath = Path.join(pathInfo.bundles, item, 'info.json');
+				if (existsSync(infoPath)) {
+					const info = JSON.parse(await readFile(infoPath))
+					if (info.version !== baseVersion) {
+						bundles.push({
+							...info,
+							hostVersion,
+							base: false,
+							active: this.config.activeVersion === info.version,
+							previous: this.config.previousActiveVersion === info.version,
+						})
+					}
 				}
 			}
 		}

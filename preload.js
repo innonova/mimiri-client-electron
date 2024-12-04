@@ -69,6 +69,10 @@ contextBridge.exposeInMainWorld(
 			saveElectronUpdate: (release, data) => ipcRenderer.send('bundle-save-electron-update', release, data),
 			updateElectron: () => ipcRenderer.send('bundle-update-electron'),
 		},
+		window: {
+			setMainWindowSize: (value) => ipcRenderer.send('window-set-size', value),
+			getMainWindowSize: () => ipcRenderer.invoke('window-get-size'),
+		},
 		platform: process.platform,
 		isFlatpak: isFlatpak(),
 		isSnap: isSnap(),

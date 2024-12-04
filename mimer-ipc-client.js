@@ -4,14 +4,16 @@ const { OfflineManager } = require('./offline-manager');
 const { SettingManager } = require('./settings-manager');
 const { BundleManager } = require('./bundle-manager');
 const { MenuManager } = require('./menu-manager');
+const { WindowManager } = require('./window-manager');
 
 class MimerIpcClient {
 
-	constructor(host) {
+	constructor(host, devMode) {
 		this.host = host;
 		this.offlineManager = new OfflineManager();
-		this.bundleManager = new BundleManager();
+		this.bundleManager = new BundleManager(devMode);
 		this.menuManager = new MenuManager(this);
+		this.windowManager = new WindowManager(this);
 	}
 
 	validateSender(frame) {
@@ -29,6 +31,7 @@ class MimerIpcClient {
 		this.mainWindow = mainWindow;
 		this.settingsManager = new SettingManager(mainWindow, startupManager);
 		this.bundleManager.init(mainWindow);
+		this.windowManager.init(mainWindow);
 
 		ipcMain.handle('cache-set-test-id', (e, testId) => {
 			if (!this.validateSender(e.senderFrame)) return null;
@@ -162,13 +165,24 @@ class MimerIpcClient {
 
 		ipcMain.on('set-app-menu', (e, value) => {
 			if (!this.validateSender(e.senderFrame)) return
-			return this.menuManager.setAppMenu(value);
+			this.menuManager.setAppMenu(value);
 		});
 
 		ipcMain.on('set-tray-menu', (e, value) => {
 			if (!this.validateSender(e.senderFrame)) return
-			return this.menuManager.setTrayMenu(value);
+			this.menuManager.setTrayMenu(value);
 		});
+
+		ipcMain.on('window-set-size', (e, value) => {
+			if (!this.validateSender(e.senderFrame)) return
+			this.windowManager.setMainWindowSize(value);
+		});
+
+		ipcMain.handle('window-get-size', (e) => {
+			if (!this.validateSender(e.senderFrame)) return
+			return this.windowManager.getMainWindowSize();
+		});
+
 	}
 
 	menuItemActivated(menuItemId) {

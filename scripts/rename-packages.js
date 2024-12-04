@@ -73,7 +73,6 @@ const run = async () => {
 			signatureKey: bundleKey,
 			signature: ''
 		}
-		// TODO get the right version here
 		const releasePath = Path.join(electronWinInstallerPath, `electron-win.${package.version}.json`);
 
 		const artifacts = [releasePath]
@@ -145,7 +144,6 @@ const run = async () => {
 			signatureKey: bundleKey,
 			signature: ''
 		}
-		// TODO get the right version here
 		const releasePath = Path.join(electronWinInstallerPath, `electron-darwin.${package.version}.json`);
 
 		const artifacts = [releasePath]

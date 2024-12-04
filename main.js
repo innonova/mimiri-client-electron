@@ -55,6 +55,9 @@ if (!gotTheLock) {
 			if (!isAppQuitting) {
 				evt.preventDefault();
 				mainWindow.hide()
+				if (mainWindow.webContents.getURL().startsWith('chrome-error')) {
+					app.quit()
+				}
 				// new Notification({
 				// 	title: 'Test',
 				// 	body: 'Test',
@@ -94,37 +97,6 @@ if (!gotTheLock) {
 		mimerIpcClient.appReady()
 
 		createWindow()
-
-		const trayContextMenu = Menu.buildFromTemplate([
-			{
-				label: 'Show', click: () => {
-					mainWindow.show();
-				}
-			},
-			{
-				label: 'Dev Tools', click: () => {
-					mainWindow.webContents.openDevTools();
-				}
-			},
-			...(process.platform !== 'linux' ? [{
-				id: 'allow-screen-sharing', label: 'Allow Screen Sharing', type: 'checkbox', click: (item) => {
-					mimerIpcClient.toggleScreenSharing()
-				}
-			}] : []),
-			{
-				id: 'open-at-login', label: 'Launch on Startup', type: 'checkbox', click: (item) => {
-					mimerIpcClient.toggleOpenAtLogin()
-				}
-			},
-			{ type: 'separator' },
-			{
-				role: 'quit',
-				click: () => {
-					app.quit()
-				}
-			},
-		])
-
 
 		mimerIpcClient.init(mainWindow, startupManager)
 

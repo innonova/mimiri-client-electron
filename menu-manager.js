@@ -8,7 +8,16 @@ class MenuManager {
 
 	appReady() {
 		this.tray = new Tray(pathInfo.trayIcon)
+		const trayContextMenu = Menu.buildFromTemplate([
+			{
+				role: 'quit',
+				click: () => {
+					app.quit()
+				}
+			},
+		])
 		this.tray.setToolTip('Mimiri Notes')
+		this.tray.setContextMenu(trayContextMenu)
 		this.tray.on('double-click', () => {
 			this.ipcClient.menuItemActivated('tray-double-click')
 		})
@@ -46,7 +55,11 @@ class MenuManager {
 				checked: item.checked,
 				enabled: item.enabled,
 				click: () => {
-					this.ipcClient.menuItemActivated(item.id)
+					try {
+						this.ipcClient.menuItemActivated(item.id)
+					} catch (ex) {
+						app.quit()
+					}
 				}
 			})))
 			this.tray.setContextMenu(menu)

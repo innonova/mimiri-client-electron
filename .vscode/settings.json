@@ -1,4 +1,4 @@
 {
-  "cSpell.words": ["APPIMAGE", "asar", "Mimiri"],
+  "cSpell.words": ["APPIMAGE", "asar", "HKCU", "Mimiri", "regedit"],
   "window.title": "${dirty}Electron Client"
 }

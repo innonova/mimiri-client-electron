@@ -72,7 +72,7 @@ if (!gotTheLock) {
 		if (devMode) {
 			//	mainWindow.webContents.openDevTools();
 		}
-		console.log(`${host}index.html`);
+		// console.log(`${host}index.html`);
 		mainWindow.loadURL(`${host}index.html`)
 		// win.loadFile('index.html')
 	}

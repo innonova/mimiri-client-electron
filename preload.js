@@ -73,6 +73,10 @@ contextBridge.exposeInMainWorld(
 			setMainWindowSize: (value) => ipcRenderer.send('window-set-size', value),
 			getMainWindowSize: () => ipcRenderer.invoke('window-get-size'),
 		},
+		watchDog: {
+			ok: () => ipcRenderer.send('watch-dog-ok'),
+			onCheck: (callback) => ipcRenderer.on('watch-dog-check', () => callback()),
+		},
 		platform: process.platform,
 		isFlatpak: isFlatpak(),
 		isSnap: isSnap(),

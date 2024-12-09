@@ -16,6 +16,7 @@ if (!gotTheLock) {
 	const hostName = devMode ? 'app-dev-aek.mimiri.io' : 'app.mimernotes.com'
 	// const host = devMode ? 'http://localhost:5173/' : 'app://app.mimernotes.com/'
 	// const hostName = devMode ? 'localhost:5173' : 'app.mimernotes.com'
+	const startUrl = `${host}index.html`
 
 	const mimerIpcClient = new MimerIpcClient(hostName, devMode);
 	const startupManager = new StartupManager()
@@ -55,7 +56,7 @@ if (!gotTheLock) {
 			if (!isAppQuitting) {
 				evt.preventDefault();
 				mainWindow.hide()
-				if (mainWindow.webContents.getURL().startsWith('chrome-error')) {
+				if (mainWindow.webContents.getURL().startsWith('chrome-error') || !mimerIpcClient.watchDog.isOk) {
 					app.quit()
 				}
 				// new Notification({
@@ -72,8 +73,8 @@ if (!gotTheLock) {
 		if (devMode) {
 			//	mainWindow.webContents.openDevTools();
 		}
-		// console.log(`${host}index.html`);
-		mainWindow.loadURL(`${host}index.html`)
+		// console.log(startUrl);
+		mainWindow.loadURL(startUrl)
 		// win.loadFile('index.html')
 	}
 
@@ -98,7 +99,7 @@ if (!gotTheLock) {
 
 		createWindow()
 
-		mimerIpcClient.init(mainWindow, startupManager)
+		mimerIpcClient.init(mainWindow, startupManager, startUrl)
 
 
 

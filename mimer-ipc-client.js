@@ -5,6 +5,7 @@ const { SettingManager } = require('./settings-manager');
 const { BundleManager } = require('./bundle-manager');
 const { MenuManager } = require('./menu-manager');
 const { WindowManager } = require('./window-manager');
+const { WatchDog } = require('./watch-dog');
 
 class MimerIpcClient {
 
@@ -14,6 +15,7 @@ class MimerIpcClient {
 		this.bundleManager = new BundleManager(devMode);
 		this.menuManager = new MenuManager(this);
 		this.windowManager = new WindowManager(this);
+		this.watchDog = new WatchDog()
 	}
 
 	validateSender(frame) {
@@ -27,11 +29,13 @@ class MimerIpcClient {
 		this.menuManager.appReady()
 	}
 
-	init(mainWindow, startupManager) {
+	init(mainWindow, startupManager, startUrl) {
 		this.mainWindow = mainWindow;
 		this.settingsManager = new SettingManager(mainWindow, startupManager);
 		this.bundleManager.init(mainWindow);
 		this.windowManager.init(mainWindow);
+		this.menuManager.init(mainWindow);
+		this.watchDog.init(startUrl, mainWindow);
 
 		ipcMain.handle('cache-set-test-id', (e, testId) => {
 			if (!this.validateSender(e.senderFrame)) return null;
@@ -133,9 +137,9 @@ class MimerIpcClient {
 			return this.bundleManager.getInstalledVersions();
 		});
 
-		ipcMain.on('bundle-save', (e, version, bundle) => {
+		ipcMain.handle('bundle-save', (e, version, bundle, use) => {
 			if (!this.validateSender(e.senderFrame)) return
-			return this.bundleManager.save(version, bundle);
+			return this.bundleManager.save(version, bundle, use, this.mainWindow);
 		});
 
 		ipcMain.on('bundle-use', (e, version) => {
@@ -183,6 +187,10 @@ class MimerIpcClient {
 			return this.windowManager.getMainWindowSize();
 		});
 
+		ipcMain.on('watch-dog-ok', (e, value) => {
+			if (!this.validateSender(e.senderFrame)) return
+			this.watchDog.ok();
+		});
 	}
 
 	menuItemActivated(menuItemId) {

@@ -6,6 +6,11 @@ class MenuManager {
 		this.ipcClient = ipcClient;
 	}
 
+
+	init(mainWindow) {
+		this.mainWindow = mainWindow
+	}
+
 	appReady() {
 		this.tray = new Tray(pathInfo.trayIcon)
 		const trayContextMenu = Menu.buildFromTemplate([
@@ -37,7 +42,13 @@ class MenuManager {
 					enabled: sub.enabled,
 					accelerator: sub.shortcut?.replace(/Ctrl/, 'CommandOrControl'),
 					click: () => {
-						this.ipcClient.menuItemActivated(sub.id)
+						if (sub.id === 'quit') {
+							app.quit()
+						} else if (sub.id === 'show-dev-tools') {
+							this.mainWindow.webContents.openDevTools();
+						} else {
+							this.ipcClient.menuItemActivated(sub.id)
+						}
 					}
 				}))
 			})))

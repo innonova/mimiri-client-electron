@@ -61,6 +61,7 @@ class BundleManager {
 		this.devMode = devMode
 		this.doInstallUpdate = false
 		this.configPath = Path.join(pathInfo.bundles, 'config.json');
+		this.bundleSaveInProgress = false
 		this.config = {
 			activeVersion: 'base'
 		}
@@ -164,18 +165,37 @@ class BundleManager {
 		}
 	}
 
-	async save(version, bundle) {
-		const bundlePath = Path.join(pathInfo.bundles, version)
+	async save(version, bundle, use, mainWindow) {
 		try {
-			await mkdir(bundlePath)
-		} catch { }
-		for (const file of bundle.files) {
-			await this.saveFilesRecursive(bundlePath, file)
+			this.bundleSaveInProgress = true
+			const bundlePath = Path.join(pathInfo.bundles, version)
+			try {
+				await mkdir(bundlePath)
+			} catch { }
+			for (const file of bundle.files) {
+				await this.saveFilesRecursive(bundlePath, file)
+			}
+			await writeFile(Path.join(bundlePath, 'info.json'), JSON.stringify({ ...bundle, files: undefined, signatures: undefined }, undefined, '  '))
+			if (use) {
+				this.use(version, mainWindow)
+			}
+			if (this.useRequested) {
+				const useRequested = this.useRequested
+				this.useRequested = undefined
+				await this.use(useRequested.version, useRequested.mainWindow)
+			}
+		} finally {
+			this.bundleSaveInProgress = false
 		}
-		await writeFile(Path.join(bundlePath, 'info.json'), JSON.stringify({ ...bundle, files: undefined, signatures: undefined }, undefined, '  '))
 	}
 
 	async use(version, mainWindow) {
+		if (this.bundleSaveInProgress) {
+			this.useRequested = {
+				version, mainWindow
+			}
+			return;
+		}
 		if (this.config.activeVersion !== version) {
 			this.config.previousActiveVersion = this.config.activeVersion
 			this.config.activeVersion = version

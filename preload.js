@@ -62,7 +62,7 @@ contextBridge.exposeInMainWorld(
 		},
 		bundle: {
 			getInstalledVersions: () => ipcRenderer.invoke('bundle-get-installed-versions'),
-			save: (version, bundle) => ipcRenderer.send('bundle-save', version, bundle),
+			save: (version, bundle) => ipcRenderer.invoke('bundle-save', version, bundle),
 			use: (version) => ipcRenderer.send('bundle-use', version),
 			delete: (version) => ipcRenderer.send('bundle-delete', version),
 			good: (version) => ipcRenderer.send('bundle-good', version),

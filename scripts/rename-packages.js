@@ -8,16 +8,21 @@ const run = async () => {
 	const package = JSON.parse(readFileSync('./package.json'))
 
 	if (process.platform === 'linux') {
-		shell.mv('./dist/mimiri-notes.tar.gz', `./dist-bin/mimiri-notes_${package.version}_amd64.tar.gz`)
-		shell.mv(`./dist/mimiri-notes_${package.version}_amd64.snap`, `./dist-bin/mimiri-notes_${package.version}_amd64.snap`)
-		shell.mv(`./dist/Mimiri Notes-${package.version}.AppImage`, `./dist-bin/mimiri-notes_${package.version}_amd64.AppImage`)
-		shell.mv('./flatpak/io.mimiri.notes.flatpak', `./dist-bin/io.mimiri.notes_${package.version}_amd64.flatpak`)
+		let arch = 'amd64'
+		if (process.arch === 'arm64') {
+			arch = arm64
+		}
+
+		shell.mv('./dist/mimiri-notes.tar.gz', `./dist-bin/mimiri-notes_${package.version}_${arch}.tar.gz`)
+		shell.mv(`./dist/mimiri-notes_${package.version}_${arch}.snap`, `./dist-bin/mimiri-notes_${package.version}_${arch}.snap`)
+		shell.mv(`./dist/Mimiri Notes-${package.version}.AppImage`, `./dist-bin/mimiri-notes_${package.version}_${arch}.AppImage`)
+		shell.mv('./flatpak/io.mimiri.notes.flatpak', `./dist-bin/io.mimiri.notes_${package.version}_${arch}.flatpak`)
 
 		writeFileSync('./artifacts.json', JSON.stringify([
-			`dist-bin/mimiri-notes_${package.version}_amd64.tar.gz`,
-			`dist-bin/mimiri-notes_${package.version}_amd64.snap`,
-			`dist-bin/mimiri-notes_${package.version}_amd64.AppImage`,
-			`dist-bin/io.mimiri.notes_${package.version}_amd64.flatpak`,
+			`dist-bin/mimiri-notes_${package.version}_${arch}.tar.gz`,
+			`dist-bin/mimiri-notes_${package.version}_${arch}.snap`,
+			`dist-bin/mimiri-notes_${package.version}_${arch}.AppImage`,
+			`dist-bin/io.mimiri.notes_${package.version}_${arch}.flatpak`,
 		], undefined, '  '))
 	}
 

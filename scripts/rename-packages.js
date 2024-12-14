@@ -10,7 +10,7 @@ const run = async () => {
 	if (process.platform === 'linux') {
 		let arch = 'amd64'
 		if (process.arch === 'arm64') {
-			arch = arm64
+			arch = 'arm64'
 		}
 
 		shell.mv('./dist/mimiri-notes.tar.gz', `./dist-bin/mimiri-notes_${package.version}_${arch}.tar.gz`)

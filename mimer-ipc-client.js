@@ -16,6 +16,7 @@ class MimerIpcClient {
 		this.menuManager = new MenuManager(this);
 		this.windowManager = new WindowManager(this);
 		this.watchDog = new WatchDog()
+		this.session = {}
 	}
 
 	validateSender(frame) {
@@ -122,6 +123,11 @@ class MimerIpcClient {
 			this.mainWindow.show();
 		});
 
+		ipcMain.on('menu-hide', (e, value) => {
+			if (!this.validateSender(e.senderFrame)) return
+			this.mainWindow.hide();
+		});
+
 		ipcMain.handle('settings-load', (e) => {
 			if (!this.validateSender(e.senderFrame)) return null;
 			return this.settingsManager.load();
@@ -187,9 +193,24 @@ class MimerIpcClient {
 			return this.windowManager.getMainWindowSize();
 		});
 
+		ipcMain.handle('window-get-is-visible', (e) => {
+			if (!this.validateSender(e.senderFrame)) return
+			return this.mainWindow.isVisible();
+		});
+
 		ipcMain.on('watch-dog-ok', (e, value) => {
 			if (!this.validateSender(e.senderFrame)) return
 			this.watchDog.ok();
+		});
+
+		ipcMain.handle('session-set-value', (e, name, value) => {
+			if (!this.validateSender(e.senderFrame)) return
+			return this.session[name] = value;
+		});
+
+		ipcMain.handle('session-get-value', (e, name) => {
+			if (!this.validateSender(e.senderFrame)) return
+			return this.session[name];
 		});
 	}
 

@@ -40,6 +40,8 @@ class SettingManager {
 			});
 		}
 
+		this.mainWindow.setSkipTaskbar(!(settings.showInTaskBar ?? true))
+
 		this.setTrayIconVisible(settings.keepTrayIconVisible)
 
 		this.mainWindow.setContentProtection(!settings.allowScreenSharing);

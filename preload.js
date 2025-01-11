@@ -47,6 +47,7 @@ contextBridge.exposeInMainWorld(
 		menu: {
 			quit: () => ipcRenderer.send('menu-quit'),
 			show: () => ipcRenderer.send('menu-show'),
+			hide: () => ipcRenderer.send('menu-hide'),
 			showDevTools: () => ipcRenderer.send('menu-show-dev-tools'),
 			setTheme: (theme) => ipcRenderer.send('menu-set-theme', theme),
 			setScreenSharing: (value) => ipcRenderer.send('menu-set-screen-sharing', value),
@@ -72,10 +73,15 @@ contextBridge.exposeInMainWorld(
 		window: {
 			setMainWindowSize: (value) => ipcRenderer.send('window-set-size', value),
 			getMainWindowSize: () => ipcRenderer.invoke('window-get-size'),
+			getIsVisible: () => ipcRenderer.invoke('window-get-is-visible'),
 		},
 		watchDog: {
 			ok: () => ipcRenderer.send('watch-dog-ok'),
 			onCheck: (callback) => ipcRenderer.on('watch-dog-check', () => callback()),
+		},
+		session: {
+			set: (name, value) => ipcRenderer.invoke('session-set-value', name, value),
+			get: (name) => ipcRenderer.invoke('session-get-value', name),
 		},
 		platform: process.platform,
 		isFlatpak: isFlatpak(),

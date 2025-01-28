@@ -55,10 +55,10 @@ if (!gotTheLock) {
 		mainWindow.on('close', (evt) => {
 			if (!isAppQuitting) {
 				evt.preventDefault();
-				mainWindow.hide()
 				if (mainWindow.webContents.getURL().startsWith('chrome-error') || !mimerIpcClient.watchDog.isOk) {
 					app.quit()
 				}
+				mimerIpcClient.menuItemActivated('hide')
 				// new Notification({
 				// 	title: 'Test',
 				// 	body: 'Test',

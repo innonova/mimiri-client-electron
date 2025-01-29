@@ -1,2 +1,3 @@
-Mimiri Electron Client
-test arm build
+# Mimiri Electron Client
+
+Documentation: work in progress

@@ -17,7 +17,7 @@
     "rename-packages": "node scripts/rename-packages.js"
   },
   "author": "Innonova GmbH",
-  "license": "mimiri",
+  "license": "GPL-2.0-only",
   "description": "Mimiri Notes",
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
@@ -27,20 +27,9 @@
     "winreg": "^1.2.5"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^7.4.0",
-    "@electron-forge/maker-deb": "^7.4.0",
-    "@electron-forge/maker-dmg": "^7.5.0",
-    "@electron-forge/maker-flatpak": "^7.5.0",
-    "@electron-forge/maker-rpm": "^7.4.0",
-    "@electron-forge/maker-snap": "^7.5.0",
-    "@electron-forge/maker-squirrel": "^7.4.0",
-    "@electron-forge/maker-zip": "^7.6.0",
-    "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
-    "@electron-forge/plugin-fuses": "^7.4.0",
     "@electron/fuses": "^1.8.0",
-    "electron": "^32.0.2",
+    "electron": "^34.0.2",
     "electron-builder": "^25.1.8",
-    "electron-rebuild": "^3.2.9",
     "js-base64": "^3.7.7",
     "js-yaml": "^4.1.0"
   },

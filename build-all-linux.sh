@@ -19,3 +19,4 @@ npm run dist
 sh ./build-targz.sh
 sh ./build-flatpak.sh
 npm run rename-packages
+ls -al ./dist-bin

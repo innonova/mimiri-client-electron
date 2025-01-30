@@ -1,7 +1,7 @@
-rm -rf mimiri-flathub-test
-git clone git@github.com:innonova/mimiri-flathub-test.git
-cp ./generated-sources.json ./mimiri-flathub-test/
-cd mimiri-flathub-test
+rm -rf mimiri-flatpak
+git clone git@github.com:innonova/mimiri-flatpak.git
+cp ./generated-sources.json ./mimiri-flatpak/
+cd mimiri-flatpak
 git add .
 git commit -m"update generated-sources"
 git push

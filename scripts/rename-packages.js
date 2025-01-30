@@ -16,7 +16,7 @@ const run = async () => {
 		shell.mv('./dist/mimiri-notes.tar.gz', `./dist-bin/mimiri-notes_${package.version}_${arch}.tar.gz`)
 		shell.mv(`./dist/mimiri-notes_${package.version}_${arch}.snap`, `./dist-bin/mimiri-notes_${package.version}_${arch}.snap`)
 		shell.mv(`./dist/Mimiri Notes-${package.version}.AppImage`, `./dist-bin/mimiri-notes_${package.version}_${arch}.AppImage`)
-		shell.mv('./flatpak/io.mimiri.notes.flatpak', `./dist-bin/io.mimiri.notes_${package.version}_${arch}.flatpak`)
+		shell.mv('./mimiri-flatpak/io.mimiri.notes.flatpak', `./dist-bin/io.mimiri.notes_${package.version}_${arch}.flatpak`)
 
 		writeFileSync('./artifacts.json', JSON.stringify([
 			`dist-bin/mimiri-notes_${package.version}_${arch}.tar.gz`,

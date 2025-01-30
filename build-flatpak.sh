@@ -1,5 +1,3 @@
-rm -rf mimiri-flatpak
-git clone git@github.com:innonova/mimiri-flatpak.git
 cp ./generated-sources.json ./mimiri-flatpak/
 cd mimiri-flatpak
 git add .

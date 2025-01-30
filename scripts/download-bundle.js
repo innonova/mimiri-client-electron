@@ -3,7 +3,7 @@ const { readFileSync } = require('node:fs');
 const yaml = require('js-yaml');
 
 
-const doc = yaml.load(readFileSync('./flatpak/io.mimiri.notes.yml'));
+const doc = yaml.load(readFileSync('./mimiri-flatpak/io.mimiri.notes.yml'));
 
 const source = doc.modules.find(m => m.name === 'mimiri-notes').sources.find(s => s['dest-filename'] === 'bundle.json');
 

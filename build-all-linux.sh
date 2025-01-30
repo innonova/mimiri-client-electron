@@ -1,3 +1,4 @@
+git clone git@github.com:innonova/mimiri-flatpak.git
 rm package-lock.json
 npm install --lockfile-version 2
 sh ./generate-sources.sh

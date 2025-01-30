@@ -1,4 +1,5 @@
-npm install
+rm package-lock.json
+npm install --lockfile-version 2
 sh ./generate-sources.sh
 npm install -D @electron-forge/cli
 npm install -D @electron-forge/maker-deb

@@ -55,22 +55,11 @@ const execute = async () => {
 	if (verified) {
 		const sha256 = /\w+/.exec(shell.exec(`sha256sum ./bundle.json`).stdout)[0]
 		console.log('verified', sha256);
-		const doc = yaml.load(await readFile('./flatpak/io.mimiri.notes.yml'));
-		const source = doc.modules.find(m => m.name === 'mimiri-notes').sources.find(s => s['dest-filename'] === 'bundle.json');
-		if (source.url !== bundleUrl || source.sha256 !== sha256) {
-			source.url = bundleUrl;
-			source.sha256 = sha256;
-			await writeFile('./flatpak/io.mimiri.notes.yml', yaml.dump(doc, {
-				noCompatMode: true,
-				forceQuotes: false,
-				lineWidth: -1,
-				quotingType: '"',
-			}))
-			console.log('Updated bundle to', latest.version);
-		} else {
-			console.log('Already on latest', latest.version);
+		const info = {
+			url: bundleUrl,
+			hash: sha256
 		}
-
+		await writeFile('./bundle-info.json', JSON.stringify(info, undefined, '  '))
 		const pack = JSON.parse(await readFile('./package.json'))
 		const baseVersionJs = `
 		module.exports = {

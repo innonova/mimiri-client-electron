@@ -8,6 +8,7 @@
     "update-bundle": "node scripts/update-bundle.js",
     "download-bundle": "node scripts/download-bundle.js",
     "unpack-bundle": "node scripts/unpack-bundle.js",
+    "update-flatpak": "node scripts/update-flatpak.js",
     "dist": "electron-builder",
     "package": "electron-forge package",
     "make": "electron-forge make",

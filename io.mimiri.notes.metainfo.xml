@@ -46,14 +46,13 @@
 
   <url type="bugtracker">https://github.com/innonova/mimiri-client/issues</url>
   <url type="homepage">https://mimiri.io</url>
-	<url type="vcs-browser">https://github.com/innonova/mimiri-client</url>
 	<url type="vcs-browser">https://github.com/innonova/mimiri-client-electron</url>
 
-	<requires>
+	<recommends>
 		<control>keyboard</control>
 		<control>pointing</control>
  		<display_length compare="ge">768</display_length>
-	</requires>
+	</recommends>
 
   <screenshots>
     <screenshot type="default">
@@ -74,6 +73,8 @@
     </release>
   </releases>
 
-  <developer_name>innonova GmbH</developer_name>
+  <developer id="io.mimiri">
+		<name>innonova GmbH</name>
+	</developer>
   <update_contact>innonova@innonova.ch</update_contact>
 </component>

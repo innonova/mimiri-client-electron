@@ -1,3 +1,8 @@
+echo "Creating tag.gz"
+arch=$(uname -m)
+if [ "$arch" != "aarch64" ]; then
+	cp -r ./dist/linux-arm64-unpacked ./dist/linux-unpacked
+fi
 cp ./tar-gz/autostart.sh ./dist/linux-unpacked/autostart.sh
 cp ./tar-gz/run.sh ./dist/linux-unpacked/run.sh
 cp ./tar-gz/mimiri-notes.desktop ./dist/linux-unpacked/mimiri-notes.desktop

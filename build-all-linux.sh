@@ -1,4 +1,3 @@
-git clone git@github.com:innonova/mimiri-flatpak.git
 rm package-lock.json
 npm install --lockfile-version 2
 sh ./generate-sources.sh
@@ -14,7 +13,6 @@ rm -f ./bundle.json
 rm -rf ./dist
 rm -rf ./dist-bin
 mkdir ./dist-bin
-npm run update-flatpak
 npm run download-bundle
 npm run unpack-bundle -- ./bundle.json
 npm run dist

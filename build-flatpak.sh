@@ -1,3 +1,5 @@
+git clone git@github.com:innonova/mimiri-flatpak.git
+npm run update-flatpak
 cp ./generated-sources.json ./mimiri-flatpak/
 cd mimiri-flatpak
 git add .

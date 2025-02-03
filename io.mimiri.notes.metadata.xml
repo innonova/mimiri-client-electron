@@ -2,38 +2,72 @@
 <component type="desktop">
   <id>io.mimiri.notes</id>
   <name>Mimiri Notes</name>
-  <summary>Mimiri Notes</summary>
+  <summary>Secure and organized notes</summary>
 
   <launchable type="desktop-id">io.mimiri.notes.desktop</launchable>
 
   <metadata_license>FSFAP</metadata_license>
-  <project_license>GPL-2.0-or-later</project_license>
+  <project_license>GPL-2.0-only</project_license>
 
   <description>
-    <p>Mimiri Notes</p>
+		<p>
+			Keep trivial, technical, confidential notes and credentials in one well structured
+			and highly secure place, without having to worry about what needs to be secured how or where.
+		</p>
+		<ul>
+			<li>Plain text</li>
+			<li>Client side encrypted</li>
+			<li>Access your notes from anywhere</li>
+			<li>Cloud or self hosted</li>
+		</ul>
   </description>
 
-  <url type="bugtracker">https://github.com/innonova/mimiri-notes/issues</url>
+	<categories>
+		<category>Utility</category>
+		<category>Office</category>
+	</categories>
+
+	<keywords>
+		<keyword>notes</keyword>
+		<keyword>secure</keyword>
+		<keyword>encrypted</keyword>
+		<keyword>credentials</keyword>
+		<keyword>password</keyword>
+	</keywords>
+
+	<icon type="remote">https://mimiri.io/io.mimiri.notes.png</icon>
+
+	<branding>
+		<color type="primary" scheme_preference="light">#4381c1</color>
+		<color type="primary" scheme_preference="dark">#4381c1</color>
+	</branding>
+
+  <content_rating type="oars-1.1" />
+
+  <url type="bugtracker">https://github.com/innonova/mimiri-client/issues</url>
   <url type="homepage">https://mimiri.io</url>
+	<url type="vcs-browser">https://github.com/innonova/mimiri-client</url>
+	<url type="vcs-browser">https://github.com/innonova/mimiri-client-electron</url>
 
-  <recommends>
-    <control>keyboard</control>
-    <control>pointing</control>
-    <control>touch</control>
-  </recommends>
-
-  <content_rating type="oars-1.1">
-  </content_rating>
+	<requires>
+		<control>keyboard</control>
+		<control>pointing</control>
+ 		<display_length compare="ge">768</display_length>
+	</requires>
 
   <screenshots>
     <screenshot type="default">
+      <image>https://mimiri.io/mimiri-dark.png</image>
+      <caption>Dark mode</caption>
+    </screenshot>
+		<screenshot>
       <image>https://mimiri.io/mimiri-white.png</image>
       <caption>Light mode</caption>
     </screenshot>
   </screenshots>
 
   <releases>
-    <release version="1.0.0" date="2024-11-23">
+    <release version="2.1.78" date="2025-01-31">
       <description>
         <p>Initial Release</p>
       </description>
@@ -41,5 +75,5 @@
   </releases>
 
   <developer_name>innonova GmbH</developer_name>
-  <update_contact>mimiri@innonova.ch</update_contact>
+  <update_contact>innonova@innonova.ch</update_contact>
 </component>

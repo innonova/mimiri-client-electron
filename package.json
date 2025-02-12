@@ -41,7 +41,7 @@
     "snap": {
       "autoStart": true,
       "allowNativeWayland": true,
-      "category": "Office;Development"
+      "category": "Productivity;Utilities"
     },
     "files": [
       "app",

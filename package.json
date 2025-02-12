@@ -38,11 +38,6 @@
   },
   "build": {
     "icon": "assets/icon.png",
-    "license": "GPL-2.0-only",
-    "author": "innonova GmbH",
-    "title": "Mimiri Nots",
-    "summary": "Secure and organized notes",
-    "description": "Keep trivial, technical, confidential notes and credentials in one well structured and highly secure place, without having to worry about what needs to be secured how or where.",
     "snap": {
       "autoStart": true,
       "allowNativeWayland": true,

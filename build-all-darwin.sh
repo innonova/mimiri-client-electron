@@ -1,6 +1,7 @@
 npm install
 npm install -D @electron-forge/cli \
 	@electron-forge/maker-dmg \
+	@electron-forge/maker-zip \
 	@electron-forge/plugin-auto-unpack-natives \
 	@electron-forge/plugin-fuses
 npm run download-bundle

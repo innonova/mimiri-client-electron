@@ -1,7 +1,7 @@
 {
   "name": "mimiri-notes",
   "productName": "Mimiri Notes",
-  "version": "2.1.70",
+  "version": "2.1.82",
   "main": "main.js",
   "scripts": {
     "start": "electron-forge start -- --hidden",
@@ -17,9 +17,11 @@
     "make-background": "cd assets && tiffutil -cathidpicheck dmg-background.png dmg-background@2x.png -out background.tiff",
     "rename-packages": "node scripts/rename-packages.js"
   },
-  "author": "Innonova GmbH",
+  "author": "innonova GmbH",
   "license": "GPL-2.0-only",
-  "description": "Mimiri Notes",
+  "title": "Mimiri Nots",
+  "summary": "Secure and organized notes",
+  "description": "Keep trivial, technical, confidential notes and credentials in one well structured and highly secure place, without having to worry about what needs to be secured how or where.",
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
     "promised-sqlite3": "^2.1.0",
@@ -38,6 +40,7 @@
     "icon": "assets/icon.png",
     "snap": {
       "autoStart": true,
+      "allowNativeWayland": true,
       "category": "Office;Development"
     },
     "files": [

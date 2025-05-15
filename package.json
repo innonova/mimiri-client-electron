@@ -1,7 +1,7 @@
 {
   "name": "mimiri-notes",
   "productName": "Mimiri Notes",
-  "version": "2.1.102",
+  "version": "2.1.103",
   "main": "main.js",
   "scripts": {
     "start": "electron-forge start -- --hidden",
@@ -23,18 +23,22 @@
   "summary": "Secure and organized notes",
   "description": "Keep trivial, technical, confidential notes and credentials in one well structured and highly secure place, without having to worry about what needs to be secured how or where.",
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.1",
-    "promised-sqlite3": "^2.1.0",
-    "shelljs": "^0.8.5",
-    "sqlite3": "^5.1.7",
-    "winreg": "^1.2.5"
+    "electron-squirrel-startup": "1.0.1",
+    "promised-sqlite3": "2.1.0",
+    "shelljs": "0.10.0",
+    "sqlite3": "5.1.7",
+    "winreg": "1.2.5"
   },
   "devDependencies": {
-    "@electron/fuses": "^1.8.0",
-    "electron": "^34.0.2",
-    "electron-builder": "^25.1.8",
-    "js-base64": "^3.7.7",
-    "js-yaml": "^4.1.0"
+    "@electron-forge/cli": "7.8.1",
+    "@electron-forge/maker-squirrel": "7.8.1",
+    "@electron-forge/plugin-auto-unpack-natives": "7.8.1",
+    "@electron-forge/plugin-fuses": "7.8.1",
+    "@electron/fuses": "1.8.0",
+    "electron": "36.2.0",
+    "electron-builder": "26.0.12",
+    "js-base64": "3.7.7",
+    "js-yaml": "4.1.0"
   },
   "build": {
     "icon": "assets/icon.png",

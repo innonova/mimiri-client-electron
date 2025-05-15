@@ -143,14 +143,19 @@ class MimerIpcClient {
 			return this.bundleManager.getInstalledVersions();
 		});
 
-		ipcMain.handle('bundle-save', (e, version, bundle, use) => {
+		ipcMain.handle('bundle-save', (e, version, bundle) => {
 			if (!this.validateSender(e.senderFrame)) return
-			return this.bundleManager.save(version, bundle, use, this.mainWindow);
+			return this.bundleManager.save(version, bundle);
 		});
 
-		ipcMain.on('bundle-use', (e, version) => {
+		ipcMain.on('bundle-use', (e, version, noActivate) => {
 			if (!this.validateSender(e.senderFrame)) return
-			return this.bundleManager.use(version, this.mainWindow);
+			return this.bundleManager.use(version, this.mainWindow, noActivate);
+		});
+
+		ipcMain.on('bundle-activate', (e) => {
+			if (!this.validateSender(e.senderFrame)) return
+			return this.bundleManager.activate(this.mainWindow);
 		});
 
 		ipcMain.on('bundle-delete', (e, version) => {
@@ -168,9 +173,9 @@ class MimerIpcClient {
 			return this.bundleManager.saveElectronUpdate(release, data);
 		});
 
-		ipcMain.on('bundle-update-electron', (e) => {
+		ipcMain.on('bundle-update-electron', (e, noRestart) => {
 			if (!this.validateSender(e.senderFrame)) return
-			return this.bundleManager.updateElectron();
+			return this.bundleManager.updateElectron(noRestart);
 		});
 
 		ipcMain.on('set-app-menu', (e, value) => {

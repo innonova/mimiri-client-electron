@@ -2,10 +2,10 @@ const { protocol, net, autoUpdater, app, dialog } = require('electron');
 const url = require('node:url')
 const Path = require('node:path');
 const { mkdirSync, existsSync, readFileSync, writeFileSync } = require('node:fs');
-const { writeFile, mkdir, readdir, readFile, rmdir } = require('node:fs').promises;
+const { writeFile, mkdir, readdir, readFile, rm } = require('node:fs').promises;
 const { baseVersion, hostVersion, releaseDate } = require('./base-version');
-const { log } = require('node:console');
 const { pathInfo } = require('./path-info');
+const { rename } = require('node:fs/promises');
 
 const fromBase64 = (base64) => {
 	return Uint8Array.from(atob(base64), c => c.charCodeAt(0))
@@ -130,20 +130,18 @@ class BundleManager {
 			active: this.config.activeVersion === 'base' || this.devMode,
 			previous: this.config.previousActiveVersion === 'base' || this.devMode,
 		}]
-		if (!this.devMode) {
-			for (const item of await readdir(pathInfo.bundles)) {
-				const infoPath = Path.join(pathInfo.bundles, item, 'info.json');
-				if (existsSync(infoPath)) {
-					const info = JSON.parse(await readFile(infoPath))
-					if (info.version !== baseVersion) {
-						bundles.push({
-							...info,
-							hostVersion,
-							base: false,
-							active: this.config.activeVersion === info.version,
-							previous: this.config.previousActiveVersion === info.version,
-						})
-					}
+		for (const item of await readdir(pathInfo.bundles)) {
+			const infoPath = Path.join(pathInfo.bundles, item, 'info.json');
+			if (existsSync(infoPath)) {
+				const info = JSON.parse(await readFile(infoPath))
+				if (info.version !== baseVersion) {
+					bundles.push({
+						...info,
+						hostVersion,
+						base: false,
+						active: this.config.activeVersion === info.version,
+						previous: this.config.previousActiveVersion === info.version,
+					})
 				}
 			}
 		}
@@ -154,7 +152,7 @@ class BundleManager {
 		if (file.files) {
 			const subDir = Path.join(dir, file.name)
 			try {
-				mkdir(subDir)
+				await mkdir(subDir)
 			} catch { }
 			for (const subFile of file.files) {
 				await this.saveFilesRecursive(subDir, subFile)
@@ -165,10 +163,14 @@ class BundleManager {
 		}
 	}
 
-	async save(version, bundle, use, mainWindow) {
+	async save(version, bundle) {
 		try {
 			this.bundleSaveInProgress = true
-			const bundlePath = Path.join(pathInfo.bundles, version)
+			this.useRequested = undefined
+			const bundlePath = Path.join(pathInfo.bundles, version + '.downloading')
+			try {
+				await rm(bundlePath, { recursive: true })
+			} catch { }
 			try {
 				await mkdir(bundlePath)
 			} catch { }
@@ -176,23 +178,21 @@ class BundleManager {
 				await this.saveFilesRecursive(bundlePath, file)
 			}
 			await writeFile(Path.join(bundlePath, 'info.json'), JSON.stringify({ ...bundle, files: undefined, signatures: undefined }, undefined, '  '))
-			if (use) {
-				this.use(version, mainWindow)
-			}
+			await rename(bundlePath, Path.join(pathInfo.bundles, version))
 			if (this.useRequested) {
 				const useRequested = this.useRequested
 				this.useRequested = undefined
-				await this.use(useRequested.version, useRequested.mainWindow)
+				await this.use(useRequested.version, useRequested.mainWindow, useRequested.noActivate)
 			}
 		} finally {
 			this.bundleSaveInProgress = false
 		}
 	}
 
-	async use(version, mainWindow) {
+	async use(version, mainWindow, noActivate) {
 		if (this.bundleSaveInProgress) {
 			this.useRequested = {
-				version, mainWindow
+				version, mainWindow, noActivate
 			}
 			return;
 		}
@@ -200,16 +200,22 @@ class BundleManager {
 			this.config.previousActiveVersion = this.config.activeVersion
 			this.config.activeVersion = version
 			await writeFile(this.configPath, JSON.stringify(this.config, undefined, '  '));
-			this.activePath = Path.join(pathInfo.bundles, this.config.activeVersion)
-			mainWindow.reload()
+			if (!noActivate) {
+				this.activate();
+			}
 		}
+	}
+
+	async activate(mainWindow) {
+		this.activePath = Path.join(pathInfo.bundles, this.config.activeVersion)
+		mainWindow.reload()
 	}
 
 	async delete(version) {
 		if (this.config.activeVersion !== version && version !== 'base') {
 			const bundlePath = Path.join(pathInfo.bundles, version)
 			if (existsSync(bundlePath)) {
-				await rmdir(bundlePat, { recursive: true })
+				await rm(bundlePath, { recursive: true })
 			}
 		}
 	}
@@ -246,14 +252,14 @@ class BundleManager {
 		}
 	}
 
-	async updateElectron() {
+	async updateElectron(noRestart) {
 		try {
 			if (process.platform === 'win32') {
-				this.doInstallUpdate = true
+				this.doInstallUpdate = !noRestart
 				autoUpdater.setFeedURL(this.updateTempDir);
 				autoUpdater.checkForUpdates();
 			} else if (process.platform === 'darwin') {
-				this.doInstallUpdate = true
+				this.doInstallUpdate = !noRestart
 				autoUpdater.setFeedURL({ url: `file://${Path.join(this.updateTempDir, 'releases.json')}` });
 				autoUpdater.checkForUpdates();
 			}

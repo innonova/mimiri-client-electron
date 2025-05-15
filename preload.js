@@ -64,11 +64,12 @@ contextBridge.exposeInMainWorld(
 		bundle: {
 			getInstalledVersions: () => ipcRenderer.invoke('bundle-get-installed-versions'),
 			save: (version, bundle) => ipcRenderer.invoke('bundle-save', version, bundle),
-			use: (version) => ipcRenderer.send('bundle-use', version),
+			use: (version, noActivate) => ipcRenderer.send('bundle-use', version, noActivate),
+			activate: () => ipcRenderer.send('bundle-activate'),
 			delete: (version) => ipcRenderer.send('bundle-delete', version),
 			good: (version) => ipcRenderer.send('bundle-good', version),
 			saveElectronUpdate: (release, data) => ipcRenderer.send('bundle-save-electron-update', release, data),
-			updateElectron: () => ipcRenderer.send('bundle-update-electron'),
+			updateElectron: (noRestart) => ipcRenderer.send('bundle-update-electron', noRestart),
 		},
 		window: {
 			setMainWindowSize: (value) => ipcRenderer.send('window-set-size', value),

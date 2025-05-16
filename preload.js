@@ -54,7 +54,7 @@ contextBridge.exposeInMainWorld(
 			onToggleScreenSharing: (callback) => ipcRenderer.on('toggle-screen-sharing', () => callback()),
 			onToggleOpenAtLogin: (callback) => ipcRenderer.on('toggle-open-at-login', () => callback()),
 			setAppMenu: (value) => ipcRenderer.send('set-app-menu', value),
-			seTrayMenu: (value) => ipcRenderer.send('set-tray-menu', value),
+			seTrayMenu: (value, colors) => ipcRenderer.send('set-tray-menu', value, colors),
 			onMenuItemActivated: (callback) => ipcRenderer.on('menu-item-activated', (_sender, menuItemId) => callback(menuItemId)),
 		},
 		settings: {

@@ -183,9 +183,9 @@ class MimerIpcClient {
 			this.menuManager.setAppMenu(value);
 		});
 
-		ipcMain.on('set-tray-menu', (e, value) => {
+		ipcMain.on('set-tray-menu', (e, value, colors) => {
 			if (!this.validateSender(e.senderFrame)) return
-			this.menuManager.setTrayMenu(value);
+			this.menuManager.setTrayMenu(value, colors);
 		});
 
 		ipcMain.on('window-set-size', (e, value) => {

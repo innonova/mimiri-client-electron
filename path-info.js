@@ -123,6 +123,20 @@ class PathInfo {
 		}
 	}
 
+	get trayIconBlack() {
+		if (process.platform === 'linux') {
+			return path.join(__dirname, 'assets', 'tray-icon-dark.png');
+		}
+		return this.trayIcon;
+	}
+
+	get trayIconWhite() {
+		if (process.platform === 'linux') {
+			return path.join(__dirname, 'assets', 'tray-icon.png');
+		}
+		return this.trayIcon;
+	}
+
 	get preload() {
 		if (process.platform === 'win32') {
 			return path.join(__dirname, 'preload.js');

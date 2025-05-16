@@ -1,7 +1,7 @@
 {
   "name": "mimiri-notes",
   "productName": "Mimiri Notes",
-  "version": "2.1.109",
+  "version": "2.1.110",
   "main": "main.js",
   "scripts": {
     "start": "electron-forge start -- --hidden",
@@ -50,7 +50,8 @@
       "*.js",
       "package.json",
       "assets/icon.png",
-      "assets/tray-icon.png"
+      "assets/tray-icon.png",
+      "assets/tray-icon-dark.png"
     ]
   }
 }

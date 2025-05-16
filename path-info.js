@@ -1,5 +1,5 @@
 const shell = require('shelljs');
-const { app, nativeTheme } = require('electron');
+const { app } = require('electron');
 const path = require('node:path');
 
 
@@ -110,11 +110,11 @@ class PathInfo {
 			return path.join(__dirname, 'assets', 'trayTemplate.png');
 		}
 		if (process.platform === 'linux') {
-			if (nativeTheme.shouldUseDarkColors) {
-				return path.join(__dirname, 'assets', 'tray-icon.png');
-			} else {
-				return path.join(__dirname, 'assets', 'tray-icon-dark.png');
-			}
+			// if (nativeTheme.shouldUseDarkColors) {
+			return path.join(__dirname, 'assets', 'tray-icon.png');
+			// } else {
+			// 	return path.join(__dirname, 'assets', 'tray-icon-dark.png');
+			// }
 		}
 	}
 

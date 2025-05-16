@@ -1,5 +1,5 @@
 const shell = require('shelljs');
-const { app } = require('electron');
+const { app, nativeTheme } = require('electron');
 const path = require('node:path');
 
 
@@ -110,7 +110,11 @@ class PathInfo {
 			return path.join(__dirname, 'assets', 'trayTemplate.png');
 		}
 		if (process.platform === 'linux') {
-			return path.join(__dirname, 'assets', 'tray-icon.png');
+			if (nativeTheme.shouldUseDarkColors) {
+				return path.join(__dirname, 'assets', 'tray-icon.png');
+			} else {
+				return path.join(__dirname, 'assets', 'tray-icon-dark.png');
+			}
 		}
 	}
 

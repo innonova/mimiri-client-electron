@@ -1,5 +1,5 @@
-npm install --lockfile-version 2
-sh ./generate-sources.sh
+npm install
+npm run generate-sources
 rm -rf ./app
 rm -f ./bundle.json
 rm -rf ./dist

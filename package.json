@@ -15,7 +15,8 @@
     "postinstall": "electron-builder install-app-deps",
     "make-iconset": "cd assets && iconutil -c icns icon.iconset",
     "make-background": "cd assets && tiffutil -cathidpicheck dmg-background.png dmg-background@2x.png -out background.tiff",
-    "rename-packages": "node scripts/rename-packages.js"
+    "rename-packages": "node scripts/rename-packages.js",
+    "generate-sources": "node scripts/generate-sources.js"
   },
   "author": "innonova GmbH",
   "license": "GPL-2.0-only",
@@ -34,7 +35,8 @@
     "electron": "36.2.0",
     "electron-builder": "26.0.12",
     "js-base64": "3.7.7",
-    "js-yaml": "4.1.0"
+    "js-yaml": "4.1.0",
+    "ssri": "^12.0.0"
   },
   "build": {
     "icon": "assets/icon.png",

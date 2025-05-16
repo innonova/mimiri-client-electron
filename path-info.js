@@ -110,16 +110,7 @@ class PathInfo {
 			return path.join(__dirname, 'assets', 'trayTemplate.png');
 		}
 		if (process.platform === 'linux') {
-			try {
-				if (nativeTheme.shouldUseDarkColors) {
-					return path.join(__dirname, 'assets', 'tray-icon.png');
-				} else {
-					return path.join(__dirname, 'assets', 'tray-icon-dark.png');
-				}
-			} catch (ex) {
-				console.log(ex);
-				return path.join(__dirname, 'assets', 'tray-icon.png');
-			}
+			return path.join(__dirname, 'assets', 'tray-icon.png');
 		}
 	}
 

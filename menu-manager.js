@@ -61,11 +61,11 @@ class MenuManager {
 	setTrayMenu(value, colors) {
 		if (value) {
 			if (colors.trayIcon === 'black') {
-				this.tray.trayIcon = pathInfo.trayIconBlack
+				this.tray.setImage(pathInfo.trayIconBlack)
 			} else if (colors.trayIcon === 'white') {
-				this.tray.trayIcon = pathInfo.trayIconWhite
+				this.tray.setImage(pathInfo.trayIconWhite)
 			} else {
-				this.tray.trayIcon = pathInfo.trayIcon
+				this.tray.setImage(pathInfo.trayIcon)
 			}
 			const menu = Menu.buildFromTemplate(value.map(item => ({
 				label: item.title,

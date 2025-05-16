@@ -1,7 +1,7 @@
 {
   "name": "mimiri-notes",
   "productName": "Mimiri Notes",
-  "version": "2.1.106",
+  "version": "2.1.107",
   "main": "main.js",
   "scripts": {
     "start": "electron-forge start -- --hidden",

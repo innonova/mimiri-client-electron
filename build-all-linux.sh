@@ -9,7 +9,7 @@ npm run download-bundle
 npm run unpack-bundle -- ./bundle.json
 npm run arm-wayland
 npm run dist
-# sh ./build-targz.sh
-# sh ./build-flatpak.sh
+sh ./build-targz.sh
+sh ./build-flatpak.sh
 npm run rename-packages
 ls -al ./dist-bin

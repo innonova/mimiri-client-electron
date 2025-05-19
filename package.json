@@ -16,7 +16,8 @@
     "make-iconset": "cd assets && iconutil -c icns icon.iconset",
     "make-background": "cd assets && tiffutil -cathidpicheck dmg-background.png dmg-background@2x.png -out background.tiff",
     "rename-packages": "node scripts/rename-packages.js",
-    "generate-sources": "node scripts/generate-sources.js"
+    "generate-sources": "node scripts/generate-sources.js",
+    "arm-wayland": "node scripts/arm-wayland.js"
   },
   "author": "innonova GmbH",
   "license": "GPL-2.0-only",

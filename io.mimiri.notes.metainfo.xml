@@ -71,6 +71,13 @@
         <p>Initial Release</p>
       </description>
     </release>
+    <release version="2.3.1" date="2025-01-31">
+      <description>
+        <p>Improved settings layout</p>
+				<p>Subscription support</p>
+				<p>More update options</p>
+      </description>
+    </release>
   </releases>
 
   <developer id="io.mimiri">

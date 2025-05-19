@@ -1,7 +1,7 @@
 
 		module.exports = {
-			baseVersion: '2.1.107',
-			hostVersion: '2.1.113',
-			releaseDate: '2025-05-16T12:23:52.536Z',
+			baseVersion: '2.3.0',
+			hostVersion: '2.3.0',
+			releaseDate: '2025-05-19T05:19:27.147Z',
 		}
 		

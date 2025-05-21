@@ -1,7 +1,7 @@
 const { protocol, net, autoUpdater, app, dialog } = require('electron');
 const url = require('node:url')
 const Path = require('node:path');
-const { mkdirSync, existsSync, readFileSync, writeFileSync } = require('node:fs');
+const { mkdirSync, existsSync, readFileSync } = require('node:fs');
 const { writeFile, mkdir, readdir, readFile, rm } = require('node:fs').promises;
 const { baseVersion, hostVersion, releaseDate } = require('./base-version');
 const { pathInfo } = require('./path-info');
@@ -201,7 +201,7 @@ class BundleManager {
 			this.config.activeVersion = version
 			await writeFile(this.configPath, JSON.stringify(this.config, undefined, '  '));
 			if (!noActivate) {
-				this.activate();
+				this.activate(mainWindow);
 			}
 		}
 	}

@@ -66,6 +66,12 @@
   </screenshots>
 
   <releases>
+    <release version="2.3.25" date="2025-05-22">
+      <description>
+        <p>No longer requires creating account</p>
+				<p>Fixes and minor improvements</p>
+      </description>
+    </release>
     <release version="2.3.1" date="2025-05-19">
       <description>
         <p>Improved settings layout</p>

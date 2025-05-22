@@ -203,6 +203,8 @@ class BundleManager {
 			if (!noActivate) {
 				this.activate(mainWindow);
 			}
+		} else if (!noActivate) {
+			this.activate(mainWindow);
 		}
 	}
 

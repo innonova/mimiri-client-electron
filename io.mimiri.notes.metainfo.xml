@@ -66,6 +66,14 @@
   </screenshots>
 
   <releases>
+    <release version="2.4.31" date="2025-06-17">
+      <description>
+        <p>Better sharing experience with new share dialog</p>
+        <p>Properties panel for notes</p>
+				<p>Clear history function</p>
+				<p>Fixes and minor improvements</p>
+      </description>
+    </release>
     <release version="2.3.25" date="2025-05-22">
       <description>
         <p>No longer requires creating account</p>

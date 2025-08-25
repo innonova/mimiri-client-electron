@@ -66,6 +66,13 @@
   </screenshots>
 
   <releases>
+    <release version="2.5.12" date="2025-08-25">
+      <description>
+        <p>Full offline support</p>
+				<p>UI enhancements</p>
+				<p>Minor fixes and improvements</p>
+      </description>
+    </release>
     <release version="2.4.31" date="2025-06-17">
       <description>
         <p>Better sharing experience with new share dialog</p>

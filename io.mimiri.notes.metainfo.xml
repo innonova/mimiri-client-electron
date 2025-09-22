@@ -2,25 +2,32 @@
 <component type="desktop">
   <id>io.mimiri.notes</id>
   <name>Mimiri Notes</name>
-  <summary>Secure and organized notes</summary>
+  <summary>Secure Device-Synchronized Notepad</summary>
 
   <launchable type="desktop-id">io.mimiri.notes.desktop</launchable>
 
   <metadata_license>FSFAP</metadata_license>
   <project_license>GPL-2.0-only</project_license>
 
-  <description>
+	<description>
 		<p>
-			Keep trivial, technical, confidential notes and credentials in one well structured
-			and highly secure place, without having to worry about what needs to be secured how or where.
+			A secure, open-source notepad for your confidential notes, credentials, and sensitive data with end-to-end encryption and real-time synchronization across all your devices.
 		</p>
+		<p>Key features:</p>
 		<ul>
-			<li>Plain text</li>
-			<li>Client side encrypted</li>
-			<li>Access your notes from anywhere</li>
-			<li>Cloud or self hosted</li>
+			<li>End-to-end encryption with AES-GCM-256 to protect your data before it leaves your device</li>
+			<li>Real-time synchronization across all platforms</li>
+			<li>Hierarchical organization with unlimited nesting of notes</li>
+			<li>Collaborative sharing of encrypted notes with trusted contacts</li>
+			<li>Complete version history to track and restore previous versions</li>
+			<li>Offline access with local encrypted cache</li>
+			<li>Password masking for sensitive text</li>
+			<li>No tracking - your data stays private</li>
 		</ul>
-  </description>
+		<p>
+			All data is encrypted client-side before transmission. The open-source codebase (GPLv2) ensures transparent security with features like automatic locking, secure password fields, and a recycle bin for accidental deletions.
+		</p>
+	</description>
 
 	<categories>
 		<category>Utility</category>
@@ -56,16 +63,38 @@
 
   <screenshots>
     <screenshot type="default">
-      <image>https://mimiri.io/mimiri-dark.png</image>
+      <image>https://mimiri.io/screenshots/linux/dark/front-page.png</image>
       <caption>Dark mode</caption>
     </screenshot>
 		<screenshot>
-      <image>https://mimiri.io/mimiri-white.png</image>
+      <image>https://mimiri.io/screenshots/linux/light/front-page.png</image>
       <caption>Light mode</caption>
+    </screenshot>
+		<screenshot>
+      <image>https://mimiri.io/screenshots/linux/dark/history.png</image>
+      <caption>History</caption>
+    </screenshot>
+		<screenshot>
+      <image>https://mimiri.io/screenshots/linux/dark/cloud-account.png</image>
+      <caption>Account Creation</caption>
+    </screenshot>
+		<screenshot>
+      <image>https://mimiri.io/screenshots/linux/dark/share-dialog.png</image>
+      <caption>Sharing</caption>
+    </screenshot>
+		<screenshot>
+      <image>https://mimiri.io/screenshots/linux/dark/plan.png</image>
+      <caption>Support Mimiri</caption>
     </screenshot>
   </screenshots>
 
   <releases>
+    <release version="2.5.24" date="2025-09-22">
+      <description>
+        <p>Update store page</p>
+				<p>Minor fixes and improvements</p>
+      </description>
+    </release>
     <release version="2.5.12" date="2025-08-25">
       <description>
         <p>Full offline support</p>

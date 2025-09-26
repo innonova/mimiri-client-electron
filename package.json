@@ -25,6 +25,7 @@
   "summary": "Secure and organized notes",
   "description": "Keep trivial, technical, confidential notes and credentials in one well structured and highly secure place, without having to worry about what needs to be secured how or where.",
   "dependencies": {
+    "dbus-next": "^0.10.2",
     "electron-squirrel-startup": "1.0.1",
     "promised-sqlite3": "2.1.0",
     "shelljs": "0.10.0",

@@ -9,6 +9,11 @@ const devMode = !!process.defaultApp;
 
 const gotTheLock = devMode ? true : app.requestSingleInstanceLock()
 
+if (process.platform === 'linux') {
+	app.commandLine.appendSwitch('ozone-platform-hint', 'auto');
+	// app.commandLine.appendSwitch('enable-features', 'WaylandWindowDecorations');
+}
+
 if (!gotTheLock) {
 	app.quit()
 } else {
@@ -79,6 +84,12 @@ if (!gotTheLock) {
 	}
 
 	app.whenReady().then(() => {
+		const sessionType = process.env.XDG_SESSION_TYPE;
+		const waylandDisplay = process.env.WAYLAND_DISPLAY;
+
+		console.log('Session type:', sessionType);  // 'wayland' or 'x11'
+		console.log('Wayland display:', !!waylandDisplay);  // true if Wayland is active
+
 		if (process.platform === 'win32' && !process.isPackaged) {
 			app.setAppUserModelId(app.name);
 		}

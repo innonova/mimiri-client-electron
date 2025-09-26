@@ -4,13 +4,34 @@ const path = require('node:path');
 
 
 class PathInfo {
+	_isBusSupported = false;
 
 	constructor() {
 		// console.log(process.env);
 	}
 
+	async supportsBus() {
+		if (this._isBusSupported) {
+			return true;
+		}
+		if (process.platform === 'linux') {
+			try {
+				const bus = sessionBus()
+				await bus.getNameOwner('org.freedesktop.portal.Desktop');
+				this._isBusSupported = true;
+				return true;
+			} catch {
+			}
+		}
+		return false;
+	}
+
+	get isSandboxed() {
+		return !!process.env.FLATPAK_ID || process.env.SNAP_CONFINEMENT === 'strict';
+	}
+
 	get isFlatpak() {
-		return process.platform === 'linux' && process.env.container === 'flatpak';
+		return process.platform === 'linux' && (process.env.container === 'flatpak' || !!process.env.FLATPAK_ID);
 	}
 
 	get isSnap() {

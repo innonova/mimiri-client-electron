@@ -3,6 +3,7 @@ const { app } = require('electron');
 const path = require('node:path');
 const { mkdirSync, rmSync, writeFileSync, existsSync } = require('node:fs');
 const { pathInfo } = require('./path-info');
+const { sessionBus } = require('dbus-next');
 
 
 class StartupManager {
@@ -18,7 +19,37 @@ class StartupManager {
 		}
 	}
 
-	enable() {
+	async dBusSetAutostart(enabled) {
+		console.log('dBusSetAutostart', enabled);
+		try {
+			const bus = sessionBus();
+			const service = await bus.getProxyObject(
+				'org.freedesktop.portal.Desktop',
+				'/org/freedesktop/portal/desktop'
+			);
+			const bg = service.getInterface('org.freedesktop.portal.Background');
+			const options = {
+				reason: new Variant('s', 'Start at login'),
+				autostart: new Variant('b', enabled),
+				commandline: new Variant('as', ['io.mimiri.notes', '--autostart']),
+			};
+			const handlePath = await bg.RequestBackground('', options);
+			const req = await bus.getProxyObject('org.freedesktop.portal.Desktop', handlePath);
+			const reqIface = req.getInterface('org.freedesktop.portal.Request');
+			return new Promise((resolve) => {
+				reqIface.on((_code, results) => {
+					resolve({
+						background: results.background?.value === true,
+						autostart: results.autostart?.value === true,
+					});
+				});
+			});
+		} catch (ex) {
+			console.log(ex);
+		}
+	}
+
+	async enable() {
 		if (process.platform === 'win32') {
 			app.setLoginItemSettings({
 				openAtLogin: true,
@@ -31,9 +62,14 @@ class StartupManager {
 				openAtLogin: true,
 			})
 		}
-		if (process.platform === 'linux') {
+
+		if (process.platform === 'linux' && pathInfo.isSandboxed && await pathInfo.supportsBus()) {
+			await dBusSetAutostart(true);
+		}
+		else if (process.platform === 'linux' && !pathInfo.isSandboxed) {
 			try {
 				mkdirSync(pathInfo.autostart);
+				await bus.getNameOwner('org.freedesktop.portal.Desktop');
 			} catch { }
 			const autostart = path.join(pathInfo.autostart, 'mimiri-notes.desktop');
 			let desktop = ''
@@ -83,7 +119,7 @@ Exec=sh ${path.join(process.cwd(), 'autostart.sh')}
 		}
 	}
 
-	disable() {
+	async disable() {
 		if (process.platform === 'win32') {
 			app.setLoginItemSettings({
 				openAtLogin: false,
@@ -95,7 +131,10 @@ Exec=sh ${path.join(process.cwd(), 'autostart.sh')}
 				openAtLogin: false,
 			})
 		}
-		if (process.platform === 'linux') {
+		if (process.platform === 'linux' && pathInfo.isSandboxed && await pathInfo.supportsBus()) {
+			await dBusSetAutostart(false);
+		}
+		else if (process.platform === 'linux' && !pathInfo.isSandboxed) {
 			const autostart = path.join(pathInfo.autostart, 'mimiri-notes.desktop');
 			try {
 				rmSync(autostart);

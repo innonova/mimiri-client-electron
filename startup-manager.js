@@ -3,7 +3,55 @@ const { app } = require('electron');
 const path = require('node:path');
 const { mkdirSync, rmSync, writeFileSync, existsSync } = require('node:fs');
 const { pathInfo } = require('./path-info');
-const { sessionBus } = require('dbus-next');
+const dbus = require('@homebridge/dbus-native');
+
+const bus = dbus.sessionBus();
+
+function parentWindow(win) {
+	try {
+		if (!win) return '';
+		const handle = win.getNativeWindowHandle();
+		return 'x11:' + handle.readUInt32LE(0).toString(16);
+	} catch {
+		return '';
+	}
+}
+
+function callPortal(iface, method, body) {
+	return new Promise((resolve, reject) => {
+		bus.invoke(
+			{
+				destination: 'org.freedesktop.portal.Desktop',
+				path: '/org/freedesktop/portal/desktop',
+				interface: iface,
+				member: method,
+				signature: 'sa{sv}', // (parent_window s, options a{sv})
+				body
+			},
+			(err, handlePath) => {
+				console.log('callPortal', err, handlePath);
+
+				if (err) return reject(err);
+
+				// const match = `type='signal',interface='org.freedesktop.portal.Request',member='Response',path='${handlePath}'`;
+				// bus.addMatch(match, mErr => { if (mErr) reject(mErr); });
+
+				function onMsg(msg) {
+					if (
+						msg.interface === 'org.freedesktop.portal.Request' &&
+						msg.member === 'Response' &&
+						msg.path === handlePath
+					) {
+						bus.connection.removeListener('message', onMsg);
+						const [code, results] = msg.body;
+						resolve({ code, results });
+					}
+				}
+				bus.connection.on('message', onMsg);
+			}
+		);
+	});
+}
 
 
 class StartupManager {
@@ -22,28 +70,27 @@ class StartupManager {
 	async dBusSetAutostart(enabled) {
 		console.log('dBusSetAutostart', enabled);
 		try {
-			const bus = sessionBus();
-			const service = await bus.getProxyObject(
-				'org.freedesktop.portal.Desktop',
-				'/org/freedesktop/portal/desktop'
-			);
-			const bg = service.getInterface('org.freedesktop.portal.Background');
+			// const bus = sessionBus();
+			// const service = await bus.getService('org.freedesktop.portal.Desktop');
+			// const bg = service.getInterface('org.freedesktop.portal.Background');
 			const options = {
-				reason: new Variant('s', 'Start at login'),
-				autostart: new Variant('b', enabled),
-				commandline: new Variant('as', ['io.mimiri.notes', '--autostart']),
+				reason: ['s', 'Start at login'],
+				autostart: ['b', enabled],
+				// commandline: ['as', ['io.mimiri.notes', '--autostart']],
 			};
-			const handlePath = await bg.RequestBackground('', options);
-			const req = await bus.getProxyObject('org.freedesktop.portal.Desktop', handlePath);
-			const reqIface = req.getInterface('org.freedesktop.portal.Request');
-			return new Promise((resolve) => {
-				reqIface.on((_code, results) => {
-					resolve({
-						background: results.background?.value === true,
-						autostart: results.autostart?.value === true,
-					});
-				});
+			const a = await callPortal(
+				'org.freedesktop.portal.Background',
+				'RequestBackground',
+				['', options]
+			).then(({ code, results }) => {
+				if (code !== 0) throw new Error('User denied or portal error');
+				return {
+					backgroundAllowed: !!results.background,
+					autostartEnabled: !!results.autostart
+				};
 			});
+			console.log(a);
+
 		} catch (ex) {
 			console.log(ex);
 		}
@@ -63,8 +110,11 @@ class StartupManager {
 			})
 		}
 
-		if (process.platform === 'linux' && pathInfo.isSandboxed && await pathInfo.supportsBus()) {
-			await dBusSetAutostart(true);
+		console.log('Enable autostart on Linux', process.platform === 'linux', pathInfo.isSandboxed, await pathInfo.supportsBus());
+
+
+		if (process.platform === 'linux' && (pathInfo.isSandboxed || true) && await pathInfo.supportsBus()) {
+			await this.dBusSetAutostart(true);
 		}
 		else if (process.platform === 'linux' && !pathInfo.isSandboxed) {
 			try {

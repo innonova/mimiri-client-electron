@@ -1,6 +1,7 @@
 const shell = require('shelljs');
 const { app, nativeTheme } = require('electron');
 const path = require('node:path');
+const dbus = require('@homebridge/dbus-native');
 
 
 class PathInfo {
@@ -16,11 +17,13 @@ class PathInfo {
 		}
 		if (process.platform === 'linux') {
 			try {
-				const bus = sessionBus()
-				await bus.getNameOwner('org.freedesktop.portal.Desktop');
-				this._isBusSupported = true;
+				const bus = dbus.sessionBus();
+				const service = await bus.getService('org.freedesktop.portal.Desktop');
+				const bg = service.getInterface('org.freedesktop.portal.Background');
+				this._isBusSupported = !!bg;
 				return true;
-			} catch {
+			} catch (ex) {
+				console.log(ex);
 			}
 		}
 		return false;

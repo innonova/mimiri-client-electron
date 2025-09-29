@@ -25,7 +25,9 @@
   "summary": "Secure and organized notes",
   "description": "Keep trivial, technical, confidential notes and credentials in one well structured and highly secure place, without having to worry about what needs to be secured how or where.",
   "dependencies": {
-    "dbus-next": "^0.10.2",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.9.0",
+    "@electron-forge/plugin-fuses": "^7.9.0",
+    "@homebridge/dbus-native": "^0.7.2",
     "electron-squirrel-startup": "1.0.1",
     "promised-sqlite3": "2.1.0",
     "shelljs": "0.10.0",
@@ -33,6 +35,7 @@
     "winreg": "1.2.5"
   },
   "devDependencies": {
+    "@electron-forge/cli": "^7.9.0",
     "@electron/fuses": "1.8.0",
     "electron": "36.2.0",
     "electron-builder": "26.0.12",

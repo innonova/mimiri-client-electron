@@ -4,20 +4,21 @@
   "version": "2.5.25",
   "main": "main.js",
   "scripts": {
-    "start": "electron-forge start -- --hidden",
-    "update-bundle": "node scripts/update-bundle.js",
-    "download-bundle": "node scripts/download-bundle.js",
-    "unpack-bundle": "node scripts/unpack-bundle.js",
-    "update-flatpak": "node scripts/update-flatpak.js",
-    "dist": "electron-builder",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
+    "build": "tsc",
+    "start": "electron . --hidden",
+    "update-bundle": "node scripts/update-bundle.mjs",
+    "download-bundle": "node scripts/download-bundle.mjs",
+    "unpack-bundle": "node scripts/unpack-bundle.mjs",
+    "update-flatpak": "node scripts/update-flatpak.mjs",
+    "dist": "npm run build && electron-builder",
+    "package": "npm run build && electron-forge package",
+    "make": "npm run build && electron-forge make",
     "postinstall": "electron-builder install-app-deps",
     "make-iconset": "cd assets && iconutil -c icns icon.iconset",
     "make-background": "cd assets && tiffutil -cathidpicheck dmg-background.png dmg-background@2x.png -out background.tiff",
-    "rename-packages": "node scripts/rename-packages.js",
-    "generate-sources": "node scripts/generate-sources.js",
-    "arm-wayland": "node scripts/arm-wayland.js"
+    "rename-packages": "node scripts/rename-packages.mjs",
+    "generate-sources": "node scripts/generate-sources.mjs",
+    "arm-wayland": "node scripts/arm-wayland.mjs"
   },
   "author": "innonova GmbH",
   "license": "GPL-2.0-only",
@@ -25,19 +26,22 @@
   "summary": "Secure and organized notes",
   "description": "Keep trivial, technical, confidential notes and credentials in one well structured and highly secure place, without having to worry about what needs to be secured how or where.",
   "dependencies": {
+    "dbus-next": "^0.10.2",
     "electron-squirrel-startup": "1.0.1",
-    "promised-sqlite3": "2.1.0",
-    "shelljs": "0.10.0",
-    "sqlite3": "5.1.7",
     "winreg": "1.2.5"
   },
   "devDependencies": {
-    "@electron/fuses": "1.8.0",
-    "electron": "36.2.0",
+    "@types/node": "24.6.1",
+    "@types/shelljs": "0.8.17",
+    "@types/winreg": "1.2.36",
+    "electron": "38.2.0",
     "electron-builder": "26.0.12",
-    "js-base64": "3.7.7",
+    "js-base64": "3.7.8",
     "js-yaml": "4.1.0",
-    "ssri": "^12.0.0"
+    "shelljs": "0.10.0",
+    "ssri": "12.0.0",
+    "ts-node": "10.9.2",
+    "typescript": "5.9.3"
   },
   "overrides": {
     "prebuild-install": {
@@ -53,7 +57,9 @@
     },
     "files": [
       "app",
-      "*.js",
+      "dist/**/*.js",
+      "main.js",
+      "preload.js",
       "package.json",
       "assets/icon.png",
       "assets/tray-icon.png",

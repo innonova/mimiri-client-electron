@@ -1,4 +1,5 @@
 npm install
+npm run build
 rm -rf ./app
 rm -f ./bundle.json
 rm -rf ./dist

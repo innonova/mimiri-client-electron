@@ -7,4 +7,6 @@ bundle.json
 .DS_Store
 mac-test.sh
 bundles/
+dev-state/
 generated-sources.json
+mimiri-flatpak/

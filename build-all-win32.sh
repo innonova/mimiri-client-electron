@@ -1,4 +1,5 @@
 npm install
+npm run build
 npm install -D @electron-forge/cli \
 	@electron-forge/maker-squirrel \
 	@electron-forge/plugin-auto-unpack-natives \

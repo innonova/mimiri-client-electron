@@ -1,4 +1,5 @@
 npm install
+npm run build
 npm install -D @electron-forge/cli \
 	@electron-forge/maker-dmg \
 	@electron-forge/maker-zip \

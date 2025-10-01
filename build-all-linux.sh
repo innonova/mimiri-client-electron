@@ -1,4 +1,5 @@
 npm install
+npm run build
 npm run generate-sources
 rm -rf ./app
 rm -f ./bundle.json

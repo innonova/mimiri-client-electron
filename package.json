@@ -63,7 +63,9 @@
       "package.json",
       "assets/icon.png",
       "assets/tray-icon.png",
-      "assets/tray-icon-dark.png"
+      "assets/tray-icon-dark.png",
+      "assets/tray-icon-symbolic.png",
+      "assets/tray-icon-symbolic@2x.png"
     ]
   }
 }

@@ -5,6 +5,7 @@ export interface PlatformRules {
   startOnLoginRequiresApproval: boolean;
   canPreventScreenRecording: boolean;
   canKeepTrayIconVisible: boolean;
+  needsTrayIconColorControl: boolean;
 }
 
 export interface OSInterop {
@@ -15,6 +16,8 @@ export interface OSInterop {
   allowScreenRecording(enabled: boolean): Promise<void>;
   isScreenRecordingAllowed(): Promise<boolean>;
   keepTrayIconVisible(enabled: boolean): Promise<void>;
+  getTheme(): Promise<string>;
+  onThemeChanged(callback: (theme: "light" | "dark") => void): Promise<void>;
   isAutoStart(): boolean;
   loadFile(options?: {
     title?: string;

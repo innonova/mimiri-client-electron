@@ -1,5 +1,6 @@
-import { app, Menu, Tray, BrowserWindow, MenuItem } from "electron";
+import { app, Menu, Tray, BrowserWindow } from "electron";
 import { pathInfo } from "../path-info";
+import { OSInterop } from "./os-interop/os-interop";
 
 export interface MenuItemConfig {
   title: string;
@@ -23,14 +24,47 @@ export interface TrayColors {
 export class MenuManager {
   private ipcClient: any; // Will type this properly when we fully convert MimerIpcClient
   private mainWindow?: BrowserWindow;
+  private osInterop?: OSInterop;
   private tray?: Tray;
+  private trayIconTheme: "black" | "white" | "system" = "system";
 
   constructor(ipcClient: any) {
     this.ipcClient = ipcClient;
   }
 
-  init(mainWindow: BrowserWindow): void {
+  init(mainWindow: BrowserWindow, osInterop: OSInterop): void {
     this.mainWindow = mainWindow;
+    this.osInterop = osInterop;
+    if (this.osInterop.platformRules().needsTrayIconColorControl) {
+      setTimeout(async () => {
+        await this.updateTrayIconForTheme();
+        await this.osInterop?.onThemeChanged((theme) => {
+          this.updateTrayIconForTheme(theme);
+        });
+      });
+    }
+  }
+
+  private async updateTrayIconForTheme(theme?: "light" | "dark") {
+    if (!this.tray) {
+      console.error("Tray not initialized");
+      return;
+    }
+    if (this.trayIconTheme === "system") {
+      if (!theme) {
+        const currentTheme = await this.osInterop?.getTheme();
+        theme = currentTheme === "dark" ? "dark" : "light";
+      }
+      if (theme === "dark" && pathInfo.trayIconWhite) {
+        this.tray.setImage(pathInfo.trayIconWhite);
+      } else if (theme === "light" && pathInfo.trayIconBlack) {
+        this.tray.setImage(pathInfo.trayIconBlack);
+      }
+    } else if (this.trayIconTheme === "black" && pathInfo.trayIconBlack) {
+      this.tray.setImage(pathInfo.trayIconBlack);
+    } else if (this.trayIconTheme === "white" && pathInfo.trayIconWhite) {
+      this.tray.setImage(pathInfo.trayIconWhite);
+    }
   }
 
   appReady(): void {
@@ -39,11 +73,7 @@ export class MenuManager {
       return;
     }
 
-    console.log("pathInfo.trayIcon", pathInfo.trayIcon);
-
     this.tray = new Tray(pathInfo.trayIcon);
-
-    console.log("tray created", this.tray);
 
     const trayContextMenu = Menu.buildFromTemplate([
       {
@@ -65,6 +95,11 @@ export class MenuManager {
       this.ipcClient.menuItemActivated("tray-click");
     });
     console.log("tray initialized");
+  }
+
+  setTrayIconTheme(theme: "black" | "white" | "system"): void {
+    this.trayIconTheme = theme;
+    void this.updateTrayIconForTheme();
   }
 
   setAppMenu(value: AppMenuConfig[] | null): void {
@@ -106,13 +141,13 @@ export class MenuManager {
 
     if (value) {
       // Set tray icon based on color preference
-      if (colors.trayIcon === "black" && pathInfo.trayIconBlack) {
-        this.tray.setImage(pathInfo.trayIconBlack);
-      } else if (colors.trayIcon === "white" && pathInfo.trayIconWhite) {
-        this.tray.setImage(pathInfo.trayIconWhite);
-      } else if (pathInfo.trayIcon) {
-        this.tray.setImage(pathInfo.trayIcon);
-      }
+      // if (colors.trayIcon === "black" && pathInfo.trayIconBlack) {
+      //   this.tray.setImage(pathInfo.trayIconBlack);
+      // } else if (colors.trayIcon === "white" && pathInfo.trayIconWhite) {
+      //   this.tray.setImage(pathInfo.trayIconWhite);
+      // } else if (pathInfo.trayIcon) {
+      //   this.tray.setImage(pathInfo.trayIcon);
+      // }
 
       const menu = Menu.buildFromTemplate(
         value.map((item) => ({

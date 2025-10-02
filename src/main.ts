@@ -11,6 +11,10 @@ import { NoopInterop } from "./managers/os-interop/noop-interop";
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
+console.log("Electron version:", process.versions.electron);
+console.log("Chrome version:", process.versions.chrome);
+console.log("V8 version:", process.versions.v8);
+console.log("Node version:", process.versions.node);
 
 const devMode: boolean = !!process.defaultApp;
 

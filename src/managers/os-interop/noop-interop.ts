@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { BrowserWindow } from "electron";
 import { OSInterop, PlatformRules } from "./os-interop";
 import { FileData } from "./file-handler";
 
@@ -14,6 +14,7 @@ export class NoopInterop implements OSInterop {
       startOnLoginRequiresApproval: false,
       canPreventScreenRecording: false,
       canKeepTrayIconVisible: false,
+      needsTrayIconColorControl: false,
     };
   }
 
@@ -30,6 +31,12 @@ export class NoopInterop implements OSInterop {
   public async isScreenRecordingAllowed(): Promise<boolean> {
     return true;
   }
+
+  public async getTheme(): Promise<string> {
+    return "light";
+  }
+
+  public async onThemeChanged(): Promise<void> {}
 
   public async keepTrayIconVisible(enabled: boolean): Promise<void> {}
 

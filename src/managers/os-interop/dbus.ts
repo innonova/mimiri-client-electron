@@ -1,102 +1,241 @@
-import dbus from "dbus-next";
+// @ts-ignore
+import dbus from "dbus-native";
+
+interface PendingRequest {
+  resolve: (value: any) => void;
+  reject: (error: Error) => void;
+  timeoutId: NodeJS.Timeout;
+  portalName: string;
+}
+
+interface BufferedMessage {
+  path: string;
+  code: number;
+  results: any;
+}
 
 export class DBus {
-  private _bus: dbus.MessageBus | undefined;
+  private _bus: any | undefined;
+  private _pendingRequests: Map<string, PendingRequest> = new Map();
+  private _bufferedMessages: BufferedMessage[] = [];
 
   constructor() {
     try {
-      if (!!process.env.FLATPAK_ID) {
-        this._bus = dbus.sessionBus();
+      this._bus = dbus.sessionBus();
+      if (this._bus) {
+        this._bus.connection.on("message", (msg: any) => {
+          if (
+            msg.type === 4 && // signal
+            msg.member === "Response" &&
+            msg.interface === "org.freedesktop.portal.Request"
+          ) {
+            const requestPath = msg.path;
+            const [code, results] = msg.body;
+
+            const pending = this._pendingRequests.get(requestPath);
+
+            if (pending) {
+              clearTimeout(pending.timeoutId);
+              this._pendingRequests.delete(requestPath);
+
+              // console.log(
+              //   `${pending.portalName} response:`,
+              //   code,
+              //   JSON.stringify(results, null, 2)
+              // );
+
+              if (code === 0) {
+                pending.resolve(results);
+              } else {
+                pending.reject(
+                  new Error(
+                    `${pending.portalName} request failed with code: ${code}`
+                  )
+                );
+              }
+            } else {
+              this._bufferedMessages.push({ path: requestPath, code, results });
+            }
+          }
+        });
       }
     } catch (error) {
       console.error("Failed to initialize DBus:", error);
     }
   }
 
-  private async backgroundInterface() {
-    const proxyObject = await this._bus!.getProxyObject(
-      "org.freedesktop.portal.Desktop",
-      "/org/freedesktop/portal/desktop"
-    );
-    return proxyObject.getInterface("org.freedesktop.portal.Background");
+  private getInterface(
+    objectPath: string,
+    interfaceName: string
+  ): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const service = this._bus!.getService("org.freedesktop.portal.Desktop");
+      service.getInterface(
+        objectPath,
+        interfaceName,
+        (err: any, iface: any) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(iface);
+          }
+        }
+      );
+    });
   }
 
-  private async propertiesInterface() {
-    const proxyObject = await this._bus!.getProxyObject(
-      "org.freedesktop.portal.Desktop",
-      "/org/freedesktop/portal/desktop"
-    );
-    return proxyObject.getInterface("org.freedesktop.DBus.Properties");
-  }
-
-  private async fileChooserInterface() {
-    const proxyObject = await this._bus!.getProxyObject(
-      "org.freedesktop.portal.Desktop",
-      "/org/freedesktop/portal/desktop"
-    );
-    return proxyObject.getInterface("org.freedesktop.portal.FileChooser");
-  }
-
-  private async expectResponse<T>(
+  private expectResponse<T>(
     handlePath: string,
     portalName: string = "Portal"
   ): Promise<T> {
-    const requestObject = await this._bus!.getProxyObject(
-      "org.freedesktop.portal.Desktop",
-      handlePath
-    );
-    const requestInterface = requestObject.getInterface(
-      "org.freedesktop.portal.Request"
-    );
+    return new Promise((resolve, reject) => {
+      const bufferedIndex = this._bufferedMessages.findIndex(
+        (msg) => msg.path === handlePath
+      );
 
-    return new Promise<T>((resolve, reject) => {
-      let timeoutId: NodeJS.Timeout;
-
-      const responseHandler = (code: number, results: any) => {
-        clearTimeout(timeoutId);
-        requestInterface.removeListener("Response", responseHandler);
+      if (bufferedIndex !== -1) {
+        const buffered = this._bufferedMessages[bufferedIndex];
+        this._bufferedMessages.splice(bufferedIndex, 1);
 
         // console.log(
-        //   `${portalName} response:`,
-        //   code,
-        //   JSON.stringify(results, null, 2)
+        //   `${portalName} response (from buffer):`,
+        //   buffered.code,
+        //   JSON.stringify(buffered.results, null, 2)
         // );
-        if (code === 0) {
-          resolve(results as T);
+
+        if (buffered.code === 0) {
+          resolve(buffered.results as T);
         } else {
-          reject(new Error(`${portalName} request failed with code: ${code}`));
+          reject(
+            new Error(
+              `${portalName} request failed with code: ${buffered.code}`
+            )
+          );
         }
-      };
+        return;
+      }
 
-      requestInterface.on("Response", responseHandler);
-
-      timeoutId = setTimeout(() => {
-        requestInterface.removeListener("Response", responseHandler);
+      const timeoutId = setTimeout(() => {
+        this._pendingRequests.delete(handlePath);
         reject(new Error(`${portalName} request timeout`));
       }, 30000);
+
+      this._pendingRequests.set(handlePath, {
+        resolve,
+        reject,
+        timeoutId,
+        portalName,
+      });
+    });
+  }
+
+  private getValue<T>(response: any, key: string): T | undefined {
+    const entry = response.find((item: any) => item[0] === key);
+    return entry ? entry[1][1][0] : undefined;
+  }
+
+  private getValues<T>(response: any, key: string): T[] {
+    const entry = response.find((item: any) => item[0] === key);
+    return entry ? entry[1][1][0] : [];
+  }
+
+  public async onThemeChanged(
+    callback: (theme: "light" | "dark") => void
+  ): Promise<void> {
+    if (!this._bus) {
+      throw new Error("DBus is not initialized or supported on this platform.");
+    }
+    const settingsInterface = await this.getInterface(
+      "/org/freedesktop/portal/desktop",
+      "org.freedesktop.portal.Settings"
+    );
+
+    settingsInterface.on(
+      "SettingChanged",
+      (namespace: string, key: string, value: any) => {
+        if (
+          namespace === "org.freedesktop.appearance" &&
+          key === "color-scheme"
+        ) {
+          const themeValue = value[1][0] as number;
+          if (themeValue === 1) {
+            callback("dark");
+          } else if (themeValue === 2) {
+            callback("light");
+          }
+        }
+      }
+    );
+  }
+
+  public async getTheme(): Promise<"light" | "dark" | "error"> {
+    if (!this._bus) {
+      throw new Error("DBus is not initialized or supported on this platform.");
+    }
+
+    const settingsInterface = await this.getInterface(
+      "/org/freedesktop/portal/desktop",
+      "org.freedesktop.portal.Settings"
+    );
+
+    return new Promise((resolve, reject) => {
+      settingsInterface.Read(
+        "org.freedesktop.appearance",
+        "color-scheme",
+        (err: any, themeVariant: any) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          const themeValue = themeVariant[1][0][1][0];
+          if (themeValue === 1) {
+            resolve("dark");
+          } else if (themeValue === 2) {
+            resolve("light");
+          } else {
+            resolve("error");
+          }
+        }
+      );
     });
   }
 
   public async setAutoStart(enabled: boolean): Promise<boolean> {
+    console.log("Setting autostart to", enabled);
     if (!this._bus) {
       throw new Error("DBus is not initialized or supported on this platform.");
     }
-    const backgroundInterface = await this.backgroundInterface();
-    const handlePath = await backgroundInterface.RequestBackground("", {
-      reason: new dbus.Variant("s", "Start Mimiri Notes on login"),
-      autostart: new dbus.Variant("b", enabled),
+
+    const backgroundInterface = await this.getInterface(
+      "/org/freedesktop/portal/desktop",
+      "org.freedesktop.portal.Background"
+    );
+
+    return new Promise((resolve, reject) => {
+      backgroundInterface.RequestBackground(
+        "",
+        [
+          ["reason", ["s", "Start Mimiri Notes on login"]],
+          ["autostart", ["b", enabled]],
+        ],
+        async (err: any, handlePath: string) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+
+          try {
+            const response = await this.expectResponse<any>(
+              handlePath,
+              "Background"
+            );
+            resolve(this.getValue(response, "autostart") || false);
+          } catch (error) {
+            reject(error);
+          }
+        }
+      );
     });
-    const response = await this.expectResponse<{
-      background: {
-        signature: string;
-        value: boolean;
-      };
-      autostart: {
-        signature: string;
-        value: boolean;
-      };
-    }>(handlePath, "Background");
-    return response.autostart.value;
   }
 
   public async loadFile(options?: {
@@ -108,7 +247,10 @@ export class DBus {
       throw new Error("DBus is not initialized or supported on this platform.");
     }
 
-    const fileChooserInterface = await this.fileChooserInterface();
+    const fileChooserInterface = await this.getInterface(
+      "/org/freedesktop/portal/desktop",
+      "org.freedesktop.portal.FileChooser"
+    );
     const filters: Array<[string, Array<[number, string]>]> = [];
 
     if (options?.filters) {
@@ -120,17 +262,32 @@ export class DBus {
       }
     }
 
-    const handlePath = await fileChooserInterface.OpenFile(
-      "",
-      options?.title || "Open File",
-      {
-        filters: new dbus.Variant("a(sa(us))", filters),
-        multiple: new dbus.Variant("b", options?.multiple || false),
-      }
-    );
+    return new Promise((resolve, reject) => {
+      fileChooserInterface.OpenFile(
+        "",
+        options?.title || "Open File",
+        [
+          ["filters", ["a(sa(us))", filters]],
+          ["multiple", ["b", options?.multiple || false]],
+        ],
+        async (err: any, handlePath: string) => {
+          if (err) {
+            reject(err);
+            return;
+          }
 
-    const results = await this.expectResponse<any>(handlePath, "FileChooser");
-    return results.uris?.value || [];
+          try {
+            const results = await this.expectResponse<any>(
+              handlePath,
+              "FileChooser"
+            );
+            resolve(this.getValues(results, "uris"));
+          } catch (error) {
+            reject(error);
+          }
+        }
+      );
+    });
   }
 
   public async saveFile(options?: {
@@ -142,7 +299,10 @@ export class DBus {
       throw new Error("DBus is not initialized or supported on this platform.");
     }
 
-    const fileChooserInterface = await this.fileChooserInterface();
+    const fileChooserInterface = await this.getInterface(
+      "/org/freedesktop/portal/desktop",
+      "org.freedesktop.portal.FileChooser"
+    );
     const filters: Array<[string, Array<[number, string]>]> = [];
 
     if (options?.filters) {
@@ -154,22 +314,37 @@ export class DBus {
       }
     }
 
-    const dbusOptions: any = {
-      filters: new dbus.Variant("a(sa(us))", filters),
-    };
+    const dbusOptions: Array<[string, [string, any]]> = [
+      ["filters", ["a(sa(us))", filters]],
+    ];
 
     if (options?.defaultName) {
-      dbusOptions.current_name = new dbus.Variant("s", options.defaultName);
+      dbusOptions.push(["current_name", ["s", options.defaultName]]);
     }
 
-    const handlePath = await fileChooserInterface.SaveFile(
-      "",
-      options?.title || "Save File",
-      dbusOptions
-    );
+    return new Promise((resolve, reject) => {
+      fileChooserInterface.SaveFile(
+        "",
+        options?.title || "Save File",
+        dbusOptions,
+        async (err: any, handlePath: string) => {
+          if (err) {
+            reject(err);
+            return;
+          }
 
-    const results = await this.expectResponse<any>(handlePath, "FileChooser");
-    return results.uris?.value || [];
+          try {
+            const results = await this.expectResponse<any>(
+              handlePath,
+              "FileChooser"
+            );
+            resolve(this.getValue(results, "uris") || []);
+          } catch (error) {
+            reject(error);
+          }
+        }
+      );
+    });
   }
 
   public async chooseFolder(options?: {
@@ -180,19 +355,37 @@ export class DBus {
       throw new Error("DBus is not initialized or supported on this platform.");
     }
 
-    const fileChooserInterface = await this.fileChooserInterface();
-
-    const handlePath = await fileChooserInterface.OpenFile(
-      "",
-      options?.title || "Choose Folder",
-      {
-        directory: new dbus.Variant("b", true),
-        multiple: new dbus.Variant("b", options?.multiple || false),
-      }
+    const fileChooserInterface = await this.getInterface(
+      "/org/freedesktop/portal/desktop",
+      "org.freedesktop.portal.FileChooser"
     );
 
-    const results = await this.expectResponse<any>(handlePath, "FileChooser");
-    return results.uris?.value || [];
+    return new Promise((resolve, reject) => {
+      fileChooserInterface.OpenFile(
+        "",
+        options?.title || "Choose Folder",
+        [
+          ["directory", ["b", true]],
+          ["multiple", ["b", options?.multiple || false]],
+        ],
+        async (err: any, handlePath: string) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+
+          try {
+            const results = await this.expectResponse<any>(
+              handlePath,
+              "FileChooser"
+            );
+            resolve(this.getValues(results, "uris"));
+          } catch (error) {
+            reject(error);
+          }
+        }
+      );
+    });
   }
 
   public get supported(): boolean {

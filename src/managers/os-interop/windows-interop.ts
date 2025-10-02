@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog } from "electron";
+import { app, BrowserWindow, dialog, nativeTheme } from "electron";
 import { OSInterop, PlatformRules } from "./os-interop";
 import Registry from "winreg";
 import { FileData, FileHandler } from "./file-handler";
@@ -16,6 +16,7 @@ export class WindowsInterop implements OSInterop {
       startOnLoginRequiresApproval: false,
       canPreventScreenRecording: true,
       canKeepTrayIconVisible: true,
+      needsTrayIconColorControl: false,
     };
   }
 
@@ -41,6 +42,22 @@ export class WindowsInterop implements OSInterop {
 
   public async isScreenRecordingAllowed(): Promise<boolean> {
     return !this.mainWindow.isContentProtected();
+  }
+
+  public async getTheme(): Promise<string> {
+    if (nativeTheme.shouldUseDarkColors) {
+      return "dark";
+    } else {
+      return "light";
+    }
+  }
+
+  public async onThemeChanged(
+    callback: (theme: "light" | "dark") => void
+  ): Promise<void> {
+    nativeTheme.on("updated", () => {
+      callback(nativeTheme.shouldUseDarkColors ? "dark" : "light");
+    });
   }
 
   public async keepTrayIconVisible(enabled: boolean): Promise<void> {

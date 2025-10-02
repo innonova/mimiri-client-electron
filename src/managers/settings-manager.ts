@@ -3,6 +3,7 @@ import * as path from "node:path";
 import { pathInfo } from "../path-info";
 import { OSInterop } from "./os-interop/os-interop";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { MenuManager } from "./menu-manager";
 
 export interface Settings {
   openAtLogin?: boolean;
@@ -16,12 +17,18 @@ export interface Settings {
 }
 
 export class SettingManager {
-  private mainWindow: BrowserWindow;
+  private _mainWindow: BrowserWindow;
   private _osInterop: OSInterop;
+  private _menuManager: MenuManager;
 
-  constructor(mainWindow: BrowserWindow, osInterop: OSInterop) {
-    this.mainWindow = mainWindow;
+  constructor(
+    mainWindow: BrowserWindow,
+    osInterop: OSInterop,
+    menuManager: MenuManager
+  ) {
+    this._mainWindow = mainWindow;
     this._osInterop = osInterop;
+    this._menuManager = menuManager;
   }
 
   private async getPath(): Promise<string> {
@@ -82,19 +89,21 @@ export class SettingManager {
       settings.openAtLogin = await this._osInterop.isStartOnLoginEnabled();
     }
 
-    if (this.mainWindow.setTitleBarOverlay && settings.titleBarColor) {
-      this.mainWindow.setTitleBarOverlay({
+    if (this._mainWindow.setTitleBarOverlay && settings.titleBarColor) {
+      this._mainWindow.setTitleBarOverlay({
         color: settings.titleBarColor,
         symbolColor: settings.titleBarSystemColor,
         height: settings.titleBarHeight,
       });
     }
 
-    this.mainWindow.setSkipTaskbar(!(settings.showInTaskBar ?? true));
+    this._menuManager.setTrayIconTheme(settings.trayIcon);
+
+    this._mainWindow.setSkipTaskbar(!(settings.showInTaskBar ?? true));
 
     this._osInterop.keepTrayIconVisible(settings.keepTrayIconVisible || false);
 
-    this.mainWindow.setContentProtection(!settings.allowScreenSharing);
+    this._mainWindow.setContentProtection(!settings.allowScreenSharing);
 
     try {
       await writeFile(settingPath, JSON.stringify(settings, undefined, "  "));

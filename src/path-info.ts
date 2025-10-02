@@ -151,7 +151,7 @@ class PathInfo {
     const basePath = this.getBasePath();
 
     if (process.platform === "linux") {
-      return path.join(basePath, "assets", "tray-icon-symbolic.png");
+      return path.join(basePath, "assets", "tray-icon-dark.png");
     }
     return this.trayIcon;
   }
@@ -160,7 +160,7 @@ class PathInfo {
     const basePath = this.getBasePath();
 
     if (process.platform === "linux") {
-      return path.join(basePath, "assets", "tray-icon-symbolic.png");
+      return path.join(basePath, "assets", "tray-icon.png");
     }
     return this.trayIcon;
   }

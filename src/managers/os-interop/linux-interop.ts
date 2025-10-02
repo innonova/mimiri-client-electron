@@ -3,9 +3,9 @@ import { OSInterop, PlatformRules } from "./os-interop";
 import path from "path";
 import { chmod, mkdir, rm, writeFile } from "fs/promises";
 import { existsSync } from "fs";
-import { BrowserWindow, dialog } from "electron";
-import { DBus } from "./dbus";
+import { BrowserWindow, dialog, nativeTheme } from "electron";
 import { FileData, FileHandler } from "./file-handler";
+import { DBus } from "./dbus";
 
 export class LinuxInterop implements OSInterop {
   private mainWindow!: BrowserWindow;
@@ -15,6 +15,7 @@ export class LinuxInterop implements OSInterop {
     startOnLoginRequiresApproval: !!process.env.FLATPAK_ID,
     canPreventScreenRecording: false,
     canKeepTrayIconVisible: false,
+    needsTrayIconColorControl: true,
   };
 
   public init(mainWindow: BrowserWindow): void {
@@ -26,7 +27,7 @@ export class LinuxInterop implements OSInterop {
   }
 
   private async enableStartOnLogin(): Promise<boolean> {
-    if (this._rules.startOnLoginRequiresApproval && this._dbus.supported) {
+    if (this._dbus.supported) {
       try {
         return await this._dbus.setAutoStart(true);
       } catch (error) {
@@ -94,7 +95,7 @@ Exec=sh ${path.join(process.cwd(), "autostart.sh")}
   }
 
   private async disableStartOnLogin(): Promise<boolean> {
-    if (this._rules.startOnLoginRequiresApproval && this._dbus.supported) {
+    if (this._dbus.supported) {
       try {
         return await this._dbus.setAutoStart(false);
       } catch (error) {
@@ -132,6 +133,35 @@ Exec=sh ${path.join(process.cwd(), "autostart.sh")}
       }
     }
     return false;
+  }
+
+  public async getTheme(): Promise<string> {
+    if (this._dbus.supported) {
+      try {
+        return await this._dbus.getTheme();
+      } catch (error) {
+        console.error("Failed to get theme via portal:", error);
+      }
+    }
+    if (nativeTheme.shouldUseDarkColors) {
+      return "dark";
+    } else {
+      return "light";
+    }
+  }
+
+  public async onThemeChanged(
+    callback: (theme: "light" | "dark") => void
+  ): Promise<void> {
+    if (this._dbus.supported) {
+      this._dbus.onThemeChanged((theme: string) => {
+        callback(theme === "dark" ? "dark" : "light");
+      });
+    } else {
+      nativeTheme.on("updated", () => {
+        callback(nativeTheme.shouldUseDarkColors ? "dark" : "light");
+      });
+    }
   }
 
   public async allowScreenRecording(enabled: boolean): Promise<void> {}

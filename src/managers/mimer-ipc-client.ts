@@ -48,11 +48,15 @@ export class MimerIpcClient {
   ): void {
     this.mainWindow = mainWindow;
     this._osInterop = osInterop;
-    this.settingsManager = new SettingManager(mainWindow, osInterop);
+    this.settingsManager = new SettingManager(
+      mainWindow,
+      osInterop,
+      this.menuManager
+    );
 
     this.bundleManager.init(mainWindow);
     this.windowManager.init(mainWindow);
-    this.menuManager.init(mainWindow);
+    this.menuManager.init(mainWindow, osInterop);
     this.watchDog.init(startUrl, mainWindow);
 
     this.setupIpcHandlers();

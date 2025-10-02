@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog } from "electron";
+import { app, BrowserWindow, dialog, nativeTheme } from "electron";
 import { OSInterop, PlatformRules } from "./os-interop";
 import { FileData, FileHandler } from "./file-handler";
 
@@ -15,6 +15,7 @@ export class MacOSInterop implements OSInterop {
       startOnLoginRequiresApproval: false,
       canPreventScreenRecording: true,
       canKeepTrayIconVisible: false,
+      needsTrayIconColorControl: false,
     };
   }
 
@@ -43,6 +44,22 @@ export class MacOSInterop implements OSInterop {
   }
 
   public async keepTrayIconVisible(enabled: boolean): Promise<void> {}
+
+  public async getTheme(): Promise<string> {
+    if (nativeTheme.shouldUseDarkColors) {
+      return "dark";
+    } else {
+      return "light";
+    }
+  }
+
+  public async onThemeChanged(
+    callback: (theme: "light" | "dark") => void
+  ): Promise<void> {
+    nativeTheme.on("updated", () => {
+      callback(nativeTheme.shouldUseDarkColors ? "dark" : "light");
+    });
+  }
 
   public isAutoStart(): boolean {
     const loginSettings = app.getLoginItemSettings();

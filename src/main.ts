@@ -11,16 +11,10 @@ import { NoopInterop } from "./managers/os-interop/noop-interop";
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
-console.log("Electron version:", process.versions.electron);
-console.log("Chrome version:", process.versions.chrome);
-console.log("V8 version:", process.versions.v8);
-console.log("Node version:", process.versions.node);
 
 const devMode: boolean = !!process.defaultApp;
 
 const gotTheLock: boolean = devMode ? true : app.requestSingleInstanceLock();
-
-console.log("DESKTOP_AUTOSTART_ID", process.env.DESKTOP_AUTOSTART_ID);
 
 if (!gotTheLock) {
   app.quit();

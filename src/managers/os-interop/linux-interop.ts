@@ -173,7 +173,12 @@ Exec=sh ${path.join(process.cwd(), "autostart.sh")}
   public async keepTrayIconVisible(enabled: boolean): Promise<void> {}
 
   public isAutoStart(): boolean {
-    return process.argv.includes("--autostart");
+    return (
+      process.argv.includes("--autostart") ||
+      !!process.env.DESKTOP_AUTOSTART_ID ||
+      !!process.env.XDP_AUTOSTART_ID ||
+      !!process.env.MEMORY_PRESSURE_WATCH?.includes("autostart")
+    );
   }
 
   public async loadFile(options?: {

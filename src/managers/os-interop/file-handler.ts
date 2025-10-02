@@ -24,7 +24,6 @@ export class FileHandler {
   }
 
   public async saveFile(filePath: string, data: FileData): Promise<boolean> {
-    console.log("Saving file to", filePath);
     const buffer = Buffer.from(data.content, "base64");
     await writeFile(filePath, buffer);
     return true;

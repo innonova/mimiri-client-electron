@@ -19,6 +19,8 @@ export interface OSInterop {
   getTheme(): Promise<string>;
   onThemeChanged(callback: (theme: "light" | "dark") => void): Promise<void>;
   isAutoStart(): boolean;
+  desktopEnvironment(): string;
+  displayServer(): string;
   loadFile(options?: {
     title?: string;
     filters?: Array<{ name: string; extensions: string[] }>;

@@ -66,6 +66,14 @@ export class MacOSInterop implements OSInterop {
     return loginSettings.wasOpenedAtLogin;
   }
 
+  public desktopEnvironment(): string {
+    return "win32";
+  }
+
+  public displayServer(): string {
+    return "win32";
+  }
+
   public async loadFile(options?: {
     title?: string;
     filters?: Array<{ name: string; extensions: string[] }>;

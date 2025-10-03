@@ -12,9 +12,6 @@ if (require("electron-squirrel-startup")) {
   app.quit();
 }
 
-console.log(process.env);
-
-
 const devMode: boolean = !!process.defaultApp;
 
 const gotTheLock: boolean = devMode ? true : app.requestSingleInstanceLock();

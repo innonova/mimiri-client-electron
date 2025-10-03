@@ -181,6 +181,20 @@ Exec=sh ${path.join(process.cwd(), "autostart.sh")}
     );
   }
 
+  public desktopEnvironment(): string {
+    if (process.env.ORIGINAL_XDG_CURRENT_DESKTOP) {
+      return process.env.ORIGINAL_XDG_CURRENT_DESKTOP;
+    }
+    return process.env.XDG_CURRENT_DESKTOP || "unknown";
+  }
+
+  public displayServer(): string {
+    return process.env.XDG_SESSION_TYPE === "wayland" ||
+      process.env.WAYLAND_DISPLAY
+      ? "wayland"
+      : "x11";
+  }
+
   public async loadFile(options?: {
     title?: string;
     filters?: Array<{ name: string; extensions: string[] }>;

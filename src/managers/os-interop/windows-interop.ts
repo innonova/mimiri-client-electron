@@ -123,6 +123,14 @@ export class WindowsInterop implements OSInterop {
     return process.argv.includes("--autostart");
   }
 
+  public desktopEnvironment(): string {
+    return "darwin";
+  }
+
+  public displayServer(): string {
+    return "darwin";
+  }
+
   public async loadFile(options?: {
     title?: string;
     filters?: Array<{ name: string; extensions: string[] }>;

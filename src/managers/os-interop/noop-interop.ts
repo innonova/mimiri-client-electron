@@ -44,6 +44,14 @@ export class NoopInterop implements OSInterop {
     return false;
   }
 
+  public desktopEnvironment(): string {
+    return "none";
+  }
+
+  public displayServer(): string {
+    return "none";
+  }
+
   public async loadFile(options?: {
     title?: string;
     filters?: Array<{ name: string; extensions: string[] }>;

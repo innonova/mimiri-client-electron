@@ -50,6 +50,10 @@ export class MenuManager {
       console.error("Tray not initialized");
       return;
     }
+    if (this.osInterop?.desktopEnvironment().toLowerCase().includes("gnome")) {
+      this.tray.setImage(pathInfo.trayIconWhite ?? pathInfo.trayIcon ?? "");
+      return;
+    }
     if (this.trayIconTheme === "system") {
       if (!theme) {
         const currentTheme = await this.osInterop?.getTheme();

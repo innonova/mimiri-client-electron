@@ -12,6 +12,9 @@ if (require("electron-squirrel-startup")) {
   app.quit();
 }
 
+console.log(process.env);
+
+
 const devMode: boolean = !!process.defaultApp;
 
 const gotTheLock: boolean = devMode ? true : app.requestSingleInstanceLock();
@@ -101,7 +104,7 @@ if (!gotTheLock) {
     });
 
     if (devMode) {
-      mainWindow.webContents.openDevTools();
+      //mainWindow.webContents.openDevTools();
     }
     mainWindow.loadURL(startUrl);
     // win.loadFile('index.html')

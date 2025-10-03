@@ -205,21 +205,24 @@ export class BundleManager {
         previous: this.config.previousActiveVersion === "base" || this.devMode,
       },
     ];
-
-    for (const item of await readdir(pathInfo.bundles!)) {
-      const infoPath = Path.join(pathInfo.bundles!, item, "info.json");
-      if (existsSync(infoPath)) {
-        const info = JSON.parse(await readFile(infoPath, "utf-8"));
-        if (info.version !== baseVersion) {
-          bundles.push({
-            ...info,
-            hostVersion,
-            base: false,
-            active: this.config.activeVersion === info.version,
-            previous: this.config.previousActiveVersion === info.version,
-          });
+    try {
+      for (const item of await readdir(pathInfo.bundles!)) {
+        const infoPath = Path.join(pathInfo.bundles!, item, "info.json");
+        if (existsSync(infoPath)) {
+          const info = JSON.parse(await readFile(infoPath, "utf-8"));
+          if (info.version !== baseVersion) {
+            bundles.push({
+              ...info,
+              hostVersion,
+              base: false,
+              active: this.config.activeVersion === info.version,
+              previous: this.config.previousActiveVersion === info.version,
+            });
+          }
         }
       }
+    } catch (ex) {
+      console.log(ex)
     }
     return bundles;
   }

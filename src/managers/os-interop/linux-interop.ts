@@ -22,6 +22,8 @@ export class LinuxInterop implements OSInterop {
   public init(mainWindow: BrowserWindow): void {
     this.mainWindow = mainWindow;
     this._rules.flags.push(this._dbus.supported ? "dbus" : "no-dbus");
+    this._rules.flags.push(this.desktopEnvironment());
+    this._rules.flags.push(this.displayServer());
   }
 
   public platformRules(): PlatformRules {

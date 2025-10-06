@@ -23,6 +23,7 @@ export class DBus {
     try {
       this._bus = dbus.sessionBus();
       if (this._bus) {
+        console.log("DBus session bus connected");
         this._bus.connection.on("message", (msg: any) => {
           if (
             msg.type === 4 && // signal
@@ -38,11 +39,11 @@ export class DBus {
               clearTimeout(pending.timeoutId);
               this._pendingRequests.delete(requestPath);
 
-              // console.log(
-              //   `${pending.portalName} response:`,
-              //   code,
-              //   JSON.stringify(results, null, 2)
-              // );
+              console.log(
+                `${pending.portalName} response:`,
+                code,
+                JSON.stringify(results, null, 2)
+              );
 
               if (code === 0) {
                 pending.resolve(results);
@@ -97,11 +98,11 @@ export class DBus {
         const buffered = this._bufferedMessages[bufferedIndex];
         this._bufferedMessages.splice(bufferedIndex, 1);
 
-        // console.log(
-        //   `${portalName} response (from buffer):`,
-        //   buffered.code,
-        //   JSON.stringify(buffered.results, null, 2)
-        // );
+        console.log(
+          `${portalName} response (from buffer):`,
+          buffered.code,
+          JSON.stringify(buffered.results, null, 2)
+        );
 
         if (buffered.code === 0) {
           resolve(buffered.results as T);

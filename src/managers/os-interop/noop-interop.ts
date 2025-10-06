@@ -15,6 +15,7 @@ export class NoopInterop implements OSInterop {
       canPreventScreenRecording: false,
       canKeepTrayIconVisible: false,
       needsTrayIconColorControl: false,
+      flags: ["noop"],
     };
   }
 

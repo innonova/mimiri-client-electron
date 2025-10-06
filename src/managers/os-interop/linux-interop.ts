@@ -16,10 +16,12 @@ export class LinuxInterop implements OSInterop {
     canPreventScreenRecording: false,
     canKeepTrayIconVisible: false,
     needsTrayIconColorControl: true,
+    flags: ["linux"],
   };
 
   public init(mainWindow: BrowserWindow): void {
     this.mainWindow = mainWindow;
+    this._rules.flags.push(this._dbus.supported ? "dbus" : "no-dbus");
   }
 
   public platformRules(): PlatformRules {

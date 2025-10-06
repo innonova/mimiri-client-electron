@@ -6,6 +6,7 @@ export interface PlatformRules {
   canPreventScreenRecording: boolean;
   canKeepTrayIconVisible: boolean;
   needsTrayIconColorControl: boolean;
+  flags: string[];
 }
 
 export interface OSInterop {

@@ -16,6 +16,7 @@ export class MacOSInterop implements OSInterop {
       canPreventScreenRecording: true,
       canKeepTrayIconVisible: false,
       needsTrayIconColorControl: false,
+      flags: ["macos"],
     };
   }
 

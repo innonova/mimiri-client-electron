@@ -17,6 +17,7 @@ export class WindowsInterop implements OSInterop {
       canPreventScreenRecording: true,
       canKeepTrayIconVisible: true,
       needsTrayIconColorControl: false,
+      flags: ["windows"],
     };
   }
 

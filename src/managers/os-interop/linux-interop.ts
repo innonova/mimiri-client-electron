@@ -29,7 +29,7 @@ export class LinuxInterop implements OSInterop {
   }
 
   private async enableStartOnLogin(): Promise<boolean> {
-    if (this._dbus.supported) {
+    if (this._dbus.supported && pathInfo.isFlatpak) {
       try {
         return await this._dbus.setAutoStart(true);
       } catch (error) {
@@ -97,7 +97,7 @@ Exec=sh ${path.join(process.cwd(), "autostart.sh")}
   }
 
   private async disableStartOnLogin(): Promise<boolean> {
-    if (this._dbus.supported) {
+    if (this._dbus.supported && pathInfo.isFlatpak) {
       try {
         return await this._dbus.setAutoStart(false);
       } catch (error) {

@@ -84,7 +84,6 @@ Exec=sh ${path.join(process.cwd(), "autostart.sh")}
 
         if (desktop) {
           try {
-            console.log(`Writing autostart file to ${autostart}`, desktop);
             await writeFile(autostart, desktop);
             await chmod(autostart, 0o755);
             return true;

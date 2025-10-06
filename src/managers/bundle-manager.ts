@@ -207,7 +207,7 @@ export class BundleManager {
     ];
     try {
       try {
-        await rm(pathInfo.bundles!, { recursive: true });
+        await mkdir(pathInfo.bundles!, { recursive: true });
       } catch {}
       for (const item of await readdir(pathInfo.bundles!)) {
         const infoPath = Path.join(pathInfo.bundles!, item, "info.json");

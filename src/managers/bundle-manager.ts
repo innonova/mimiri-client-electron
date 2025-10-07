@@ -74,6 +74,8 @@ export class BundleManager {
   private mainWindow?: BrowserWindow;
   private useRequested?: UseRequest;
   private updateTempDir?: string;
+  private lastActivate: number = 0;
+  private activateCount: number = 0;
 
   constructor(devMode: boolean) {
     this.devMode = devMode;
@@ -318,6 +320,15 @@ export class BundleManager {
   }
 
   async activate(mainWindow: BrowserWindow): Promise<void> {
+    const timeSinceLast = Date.now() - this.lastActivate;
+    if (timeSinceLast < 10000) {
+      if (this.activateCount++ > 5) {
+        return;
+      }
+    } else {
+      this.activateCount = 0;
+    }
+    this.lastActivate = Date.now();
     this.activePath = Path.join(pathInfo.bundles!, this.config.activeVersion);
     mainWindow.reload();
   }

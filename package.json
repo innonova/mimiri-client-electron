@@ -1,7 +1,7 @@
 {
   "name": "mimiri-notes",
   "productName": "Mimiri Notes",
-  "version": "2.5.44",
+  "version": "2.5.45",
   "main": "main.js",
   "scripts": {
     "build": "tsc",
@@ -35,7 +35,7 @@
     "@types/node": "24.6.1",
     "@types/shelljs": "0.8.17",
     "@types/winreg": "1.2.36",
-    "electron": "38.2.0",
+    "electron": "38.2.1",
     "electron-builder": "26.0.12",
     "js-base64": "3.7.8",
     "js-yaml": "4.1.0",

@@ -180,8 +180,7 @@ Exec=sh ${path.join(process.cwd(), "autostart.sh")}
     return (
       process.argv.includes("--autostart") ||
       !!process.env.DESKTOP_AUTOSTART_ID ||
-      !!process.env.XDP_AUTOSTART_ID ||
-      !!process.env.MEMORY_PRESSURE_WATCH?.includes("autostart")
+      !!process.env.XDP_AUTOSTART_ID
     );
   }
 

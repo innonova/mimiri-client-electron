@@ -1,4 +1,5 @@
 import { app, nativeTheme } from "electron";
+import { readFileSync } from "node:fs";
 import * as path from "node:path";
 
 const isDev = process.defaultApp || process.argv.includes("--dev");
@@ -6,6 +7,10 @@ const isDev = process.defaultApp || process.argv.includes("--dev");
 class PathInfo {
   constructor() {
     // console.log(process.env);
+    if (this.isFlatpak) {
+      const flatpakInfo = readFileSync("./flatpak-info").toString().trim();
+      console.log("Flatpak Info:", flatpakInfo);
+    }
   }
 
   get isFlatpak(): boolean {

@@ -8,7 +8,7 @@ class PathInfo {
   constructor() {
     // console.log(process.env);
     if (this.isFlatpak) {
-      const flatpakInfo = readFileSync("./flatpak-info").toString().trim();
+      const flatpakInfo = readFileSync("/.flatpak-info").toString().trim();
       console.log("Flatpak Info:", flatpakInfo);
     }
   }

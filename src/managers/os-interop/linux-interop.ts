@@ -203,22 +203,22 @@ Exec=sh ${path.join(process.cwd(), "autostart.sh")}
     filters?: Array<{ name: string; extensions: string[] }>;
     multiple?: boolean;
   }): Promise<FileData[]> {
-    if (this._dbus.supported) {
-      try {
-        const files = await this._dbus.loadFile(options);
-        if (files.length === 0) {
-          return [];
-        }
-        return this._fileHandler.loadFile(
-          files.map((f) => f.replace("file://", ""))
-        );
-      } catch (error) {
-        console.error(
-          "Failed to load file via portal, falling back to Electron dialog:",
-          error
-        );
-      }
-    }
+    // if (this._dbus.supported) {
+    //   try {
+    //     const files = await this._dbus.loadFile(options);
+    //     if (files.length === 0) {
+    //       return [];
+    //     }
+    //     return this._fileHandler.loadFile(
+    //       files.map((f) => f.replace("file://", ""))
+    //     );
+    //   } catch (error) {
+    //     console.error(
+    //       "Failed to load file via portal, falling back to Electron dialog:",
+    //       error
+    //     );
+    //   }
+    // }
 
     const result = await dialog.showOpenDialog(this.mainWindow, {
       title: options?.title,
@@ -245,23 +245,23 @@ Exec=sh ${path.join(process.cwd(), "autostart.sh")}
       filters?: Array<{ name: string; extensions: string[] }>;
     }
   ): Promise<boolean> {
-    if (this._dbus.supported) {
-      try {
-        const files = await this._dbus.saveFile(options);
-        if (files.length === 0) {
-          return false;
-        }
-        return this._fileHandler.saveFile(
-          files[0].replace("file://", ""),
-          data
-        );
-      } catch (error) {
-        console.error(
-          "Failed to save file via portal, falling back to Electron dialog:",
-          error
-        );
-      }
-    }
+    // if (this._dbus.supported) {
+    //   try {
+    //     const files = await this._dbus.saveFile(options);
+    //     if (files.length === 0) {
+    //       return false;
+    //     }
+    //     return this._fileHandler.saveFile(
+    //       files[0].replace("file://", ""),
+    //       data
+    //     );
+    //   } catch (error) {
+    //     console.error(
+    //       "Failed to save file via portal, falling back to Electron dialog:",
+    //       error
+    //     );
+    //   }
+    // }
 
     const result = await dialog.showSaveDialog(this.mainWindow, {
       title: options?.title,
@@ -282,22 +282,22 @@ Exec=sh ${path.join(process.cwd(), "autostart.sh")}
     title?: string;
     multiple?: boolean;
   }): Promise<FileData[]> {
-    if (this._dbus.supported) {
-      try {
-        const folders = await this._dbus.chooseFolder(options);
-        if (folders.length === 0) {
-          return [];
-        }
-        return this._fileHandler.loadFolder(
-          folders.map((f) => f.replace("file://", ""))
-        );
-      } catch (error) {
-        console.error(
-          "Failed to choose folder via portal, falling back to Electron dialog:",
-          error
-        );
-      }
-    }
+    // if (this._dbus.supported) {
+    //   try {
+    //     const folders = await this._dbus.chooseFolder(options);
+    //     if (folders.length === 0) {
+    //       return [];
+    //     }
+    //     return this._fileHandler.loadFolder(
+    //       folders.map((f) => f.replace("file://", ""))
+    //     );
+    //   } catch (error) {
+    //     console.error(
+    //       "Failed to choose folder via portal, falling back to Electron dialog:",
+    //       error
+    //     );
+    //   }
+    // }
 
     const result = await dialog.showOpenDialog(this.mainWindow, {
       title: options?.title,
@@ -319,26 +319,26 @@ Exec=sh ${path.join(process.cwd(), "autostart.sh")}
       title?: string;
     }
   ): Promise<boolean> {
-    if (this._dbus.supported) {
-      try {
-        const folders = await this._dbus.chooseFolder({
-          ...options,
-          multiple: false,
-        });
-        if (folders.length === 0) {
-          return false;
-        }
-        return this._fileHandler.saveFolder(
-          folders[0].replace("file://", ""),
-          data
-        );
-      } catch (error) {
-        console.error(
-          "Failed to choose folder via portal, falling back to Electron dialog:",
-          error
-        );
-      }
-    }
+    // if (this._dbus.supported) {
+    //   try {
+    //     const folders = await this._dbus.chooseFolder({
+    //       ...options,
+    //       multiple: false,
+    //     });
+    //     if (folders.length === 0) {
+    //       return false;
+    //     }
+    //     return this._fileHandler.saveFolder(
+    //       folders[0].replace("file://", ""),
+    //       data
+    //     );
+    //   } catch (error) {
+    //     console.error(
+    //       "Failed to choose folder via portal, falling back to Electron dialog:",
+    //       error
+    //     );
+    //   }
+    // }
 
     const result = await dialog.showOpenDialog(this.mainWindow, {
       title: options?.title,

@@ -91,7 +91,7 @@ class PathInfo {
 
   get bundles(): string | undefined {
     if (process.platform === "win32") {
-      return path.join(__dirname.replace("\\\\app.asar", ""), "bundles");
+      return path.join(__dirname.replace("\\app.asar\\dist", ""), "bundles");
     }
     if (process.platform === "darwin") {
       return path.join(app.getPath("home"), ".mimiri", "bundles");

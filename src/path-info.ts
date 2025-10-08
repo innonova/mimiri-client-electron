@@ -5,11 +5,20 @@ import * as path from "node:path";
 const isDev = process.defaultApp || process.argv.includes("--dev");
 
 class PathInfo {
+  private _isFlatHub: boolean = false;
+  private _isSnapStore: boolean = false;
+
   constructor() {
-    // console.log(process.env);
     if (this.isFlatpak) {
-      const flatpakInfo = readFileSync("/.flatpak-info").toString().trim();
-      console.log("Flatpak Info:", flatpakInfo);
+      const flatpakInfo = readFileSync("/.flatpak-info").toString();
+      if (flatpakInfo?.includes("origin=flathub")) {
+        this._isFlatHub = true;
+      }
+    }
+    if (this.isSnap) {
+      if (process.env.SNAP_NAME === "mimiri-notes") {
+        this._isSnapStore = true;
+      }
     }
   }
 
@@ -26,11 +35,11 @@ class PathInfo {
   }
 
   get isFlatHub(): boolean {
-    return false;
+    return this._isFlatHub;
   }
 
   get isSnapStore(): boolean {
-    return false;
+    return this._isSnapStore;
   }
 
   get isTarGz(): boolean {

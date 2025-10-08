@@ -385,7 +385,7 @@ export class BundleManager {
     try {
       if (process.platform === "win32" && this.updateTempDir) {
         this.doInstallUpdate = !noRestart;
-        autoUpdater.setFeedURL({ url: `file://${this.updateTempDir}` });
+        autoUpdater.setFeedURL({ url: this.updateTempDir });
         autoUpdater.checkForUpdates();
       } else if (process.platform === "darwin" && this.updateTempDir) {
         this.doInstallUpdate = !noRestart;

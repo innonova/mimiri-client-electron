@@ -5,7 +5,7 @@ import { OSInterop } from "./managers/os-interop/os-interop";
 import { WindowsInterop } from "./managers/os-interop/windows-interop";
 import { LinuxInterop } from "./managers/os-interop/linux-interop";
 import { MacOSInterop } from "./managers/os-interop/macos-interop";
-import { NoopInterop } from "./managers/os-interop/noop-interop";
+import { LogManager } from "./managers/log-manager";
 
 // Check for squirrel startup and exit early if needed
 if (require("electron-squirrel-startup")) {
@@ -30,6 +30,9 @@ if (!gotTheLock) {
   const startUrl: string = `${host}index.html`;
 
   // console.log(startUrl);
+
+  const logManager = new LogManager();
+  logManager.log("Starting Mimiri Notes Client");
 
   const osInterop: OSInterop = // new NoopInterop();
     process.platform === "linux"

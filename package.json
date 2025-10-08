@@ -1,7 +1,7 @@
 {
   "name": "mimiri-notes",
   "productName": "Mimiri Notes",
-  "version": "2.5.49",
+  "version": "2.5.50",
   "main": "main.js",
   "scripts": {
     "build": "tsc",
@@ -27,7 +27,6 @@
   "description": "Keep trivial, technical, confidential notes and credentials in one well structured and highly secure place, without having to worry about what needs to be secured how or where.",
   "dependencies": {
     "dbus-native": "^0.4.0",
-    "dbus-next": "^0.10.2",
     "electron-squirrel-startup": "1.0.1",
     "winreg": "1.2.5"
   },

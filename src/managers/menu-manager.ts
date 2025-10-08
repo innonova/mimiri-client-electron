@@ -74,33 +74,37 @@ export class MenuManager {
   }
 
   appReady(): void {
-    if (!pathInfo.trayIcon) {
-      console.error("Tray icon path not available");
-      return;
-    }
+    try {
+      if (!pathInfo.trayIcon) {
+        console.error("Tray icon path not available");
+        return;
+      }
 
-    this.tray = new Tray(pathInfo.trayIcon);
+      this.tray = new Tray(pathInfo.trayIcon);
 
-    const trayContextMenu = Menu.buildFromTemplate([
-      {
-        role: "quit",
-        click: () => {
-          app.quit();
+      const trayContextMenu = Menu.buildFromTemplate([
+        {
+          role: "quit",
+          click: () => {
+            app.quit();
+          },
         },
-      },
-    ]);
+      ]);
 
-    this.tray.setToolTip("Mimiri Notes");
-    this.tray.setContextMenu(trayContextMenu);
+      this.tray.setToolTip("Mimiri Notes");
+      this.tray.setContextMenu(trayContextMenu);
 
-    this.tray.on("double-click", () => {
-      this.ipcClient.menuItemActivated("tray-double-click");
-    });
+      this.tray.on("double-click", () => {
+        this.ipcClient.menuItemActivated("tray-double-click");
+      });
 
-    this.tray.on("click", () => {
-      this.ipcClient.menuItemActivated("tray-click");
-    });
-    console.log("tray initialized");
+      this.tray.on("click", () => {
+        this.ipcClient.menuItemActivated("tray-click");
+      });
+      console.log("tray initialized");
+    } catch (ex) {
+      console.error("Tray initialization failed:", ex);
+    }
   }
 
   setTrayIconTheme(theme: "black" | "white" | "system"): void {

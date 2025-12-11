@@ -123,7 +123,7 @@ if (!gotTheLock) {
       callback({
         responseHeaders: {
           ...details.responseHeaders,
-          "Content-Security-Policy": `script-src 'self' ${host}`,
+          "Content-Security-Policy": `script-src 'self' ${host} 'wasm-unsafe-eval'`,
         },
       });
     });

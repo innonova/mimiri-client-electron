@@ -51,6 +51,9 @@
       "allowNativeWayland": true,
       "category": "Productivity;Utilities"
     },
+    "electronDownload": {
+      "isVerifyChecksum": false
+    },
     "files": [
       "app",
       "dist/**/*.js",

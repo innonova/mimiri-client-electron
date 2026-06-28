@@ -153,7 +153,7 @@ const main = async () => {
 
 		const electronCacheDir = crypto
 			.createHash('sha256')
-			.update(`https://github.com/electron/electron/releases/download/v${electronVersion}`)
+			.update(`/electron/electron/releases/download/v${electronVersion}`)
 			.digest('hex');
 
 		generatedSources.push({

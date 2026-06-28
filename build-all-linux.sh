@@ -1,3 +1,4 @@
+nmv use
 npm install
 npm run build
 npm run generate-sources

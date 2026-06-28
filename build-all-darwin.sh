@@ -1,3 +1,4 @@
+nmv use
 npm install
 npm run build
 npm install -D @electron-forge/cli \

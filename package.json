@@ -46,6 +46,7 @@
   "build": {
     "icon": "assets/icon.png",
     "snap": {
+      "base": "core22",
       "autoStart": true,
       "allowNativeWayland": true,
       "category": "Productivity;Utilities"

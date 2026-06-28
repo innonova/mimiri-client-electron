@@ -1,12 +1,12 @@
 import shell from 'shelljs';
 import { readFile, writeFile } from 'node:fs/promises';
-import yaml from 'js-yaml';
+import { load, dump } from 'js-yaml';
 
 const execute = async () => {
 	try {
 		const commitHash = shell.exec('git rev-parse HEAD').stdout.trim();
 		const info = JSON.parse(await readFile('./bundle-info.json'));
-		const doc = yaml.load(await readFile('./mimiri-flatpak/io.mimiri.notes.yml'));
+		const doc = load(await readFile('./mimiri-flatpak/io.mimiri.notes.yml'));
 
 		const electronSource = doc.modules
 			.find(m => m.name === 'mimiri-notes')
@@ -35,7 +35,7 @@ const execute = async () => {
 		}
 
 		if (changed) {
-			await writeFile('./mimiri-flatpak/io.mimiri.notes.yml', yaml.dump(doc, {
+			await writeFile('./mimiri-flatpak/io.mimiri.notes.yml', dump(doc, {
 				noCompatMode: true,
 				forceQuotes: false,
 				lineWidth: -1,

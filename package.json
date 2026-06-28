@@ -13,7 +13,7 @@
     "dist": "npm run build && electron-builder",
     "package": "npm run build && electron-forge package",
     "make": "npm run build && electron-forge make",
-    "postinstall": "node scripts/fix-dbus-native.mjs && electron-builder install-app-deps",
+    "postinstall": "node scripts/patch-dbus-native.mjs && electron-builder install-app-deps",
     "make-iconset": "cd assets && iconutil -c icns icon.iconset",
     "make-background": "cd assets && tiffutil -cathidpicheck dmg-background.png dmg-background@2x.png -out background.tiff",
     "rename-packages": "node scripts/rename-packages.mjs",

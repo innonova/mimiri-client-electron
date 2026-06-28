@@ -1,7 +1,7 @@
 {
   "name": "mimiri-notes",
   "productName": "Mimiri Notes",
-  "version": "2.6.3",
+  "version": "2.6.4",
   "main": "main.js",
   "scripts": {
     "build": "tsc",
@@ -10,7 +10,7 @@
     "download-bundle": "node scripts/download-bundle.mjs",
     "unpack-bundle": "node scripts/unpack-bundle.mjs",
     "update-flatpak": "node scripts/update-flatpak.mjs",
-    "dist": "npm run build && echo \"ELECTRON_CACHE=[$ELECTRON_CACHE]\" && DEBUG=@electron/get* electron-builder",
+    "dist": "npm run build && electron-builder",
     "package": "npm run build && electron-forge package",
     "make": "npm run build && electron-forge make",
     "postinstall": "node scripts/patch-dbus-native.mjs && electron-builder install-app-deps",

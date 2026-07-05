@@ -1,6 +1,7 @@
 import { app, nativeTheme } from "electron";
 import { readFileSync } from "node:fs";
 import * as path from "node:path";
+import { userDataDirOverride } from "./runtime-config";
 
 const isDev = process.defaultApp || process.argv.includes("--dev");
 
@@ -52,6 +53,9 @@ class PathInfo {
   }
 
   get settings(): string | undefined {
+    if (userDataDirOverride) {
+      return userDataDirOverride;
+    }
     if (isDev) {
       return path.join(__dirname, "dev-state");
     }
@@ -71,6 +75,9 @@ class PathInfo {
   }
 
   get database(): string | undefined {
+    if (userDataDirOverride) {
+      return userDataDirOverride;
+    }
     if (isDev) {
       return path.join(__dirname, "dev-state");
     }
@@ -90,6 +97,9 @@ class PathInfo {
   }
 
   get bundles(): string | undefined {
+    if (userDataDirOverride) {
+      return path.join(userDataDirOverride, "bundles");
+    }
     if (process.platform === "win32") {
       return path.join(__dirname.replace("\\app.asar\\dist", ""), "bundles");
     }

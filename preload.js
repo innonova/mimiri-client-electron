@@ -24,6 +24,35 @@ function isTarGz() {
 	return process.platform === 'linux' && !isFlatpak() && !isSnap() && !isAppImage();
 }
 
+function getMimiriInfo() {
+	const prefix = '--mimiri-info=';
+	const arg = process.argv.find(a => a.startsWith(prefix));
+	if (arg) {
+		try {
+			return JSON.parse(decodeURIComponent(arg.substring(prefix.length)));
+		} catch {
+			return undefined;
+		}
+	}
+	return undefined;
+}
+
+const mimiriInfo = getMimiriInfo();
+
+if (mimiriInfo?.testMode) {
+	contextBridge.exposeInMainWorld(
+		'mimiriTestInfo',
+		{
+			version: mimiriInfo.version,
+			baseVersion: mimiriInfo.baseVersion,
+			channel: mimiriInfo.channel,
+			platform: mimiriInfo.platform,
+			apiUrl: mimiriInfo.apiUrl,
+			blogApiUrl: mimiriInfo.blogApiUrl,
+		}
+	)
+}
+
 
 contextBridge.exposeInMainWorld(
 	'mimiri',

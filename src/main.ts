@@ -6,6 +6,13 @@ import { WindowsInterop } from "./managers/os-interop/windows-interop";
 import { LinuxInterop } from "./managers/os-interop/linux-interop";
 import { MacOSInterop } from "./managers/os-interop/macos-interop";
 import { LogManager } from "./managers/log-manager";
+import {
+  testMode,
+  apiUrlOverride,
+  blogApiUrlOverride,
+  userDataDirOverride,
+} from "./runtime-config";
+import { baseVersion, hostVersion } from "./base-version";
 
 // Check for squirrel startup and exit early if needed
 if (require("electron-squirrel-startup")) {
@@ -13,6 +20,10 @@ if (require("electron-squirrel-startup")) {
 }
 
 const devMode: boolean = !!process.defaultApp;
+
+if (userDataDirOverride) {
+  app.setPath("userData", userDataDirOverride);
+}
 
 const gotTheLock: boolean = devMode ? true : app.requestSingleInstanceLock();
 
@@ -38,8 +49,8 @@ if (!gotTheLock) {
     process.platform === "linux"
       ? new LinuxInterop()
       : process.platform === "win32"
-      ? new WindowsInterop()
-      : new MacOSInterop();
+        ? new WindowsInterop()
+        : new MacOSInterop();
 
   // console.log("Platform:", process.platform);
 
@@ -58,7 +69,16 @@ if (!gotTheLock) {
   });
 
   const createWindow = (): void => {
-    const show: boolean = !osInterop.isAutoStart();
+    const show: boolean = testMode || !osInterop.isAutoStart();
+    const mimiriInfo = {
+      version: hostVersion,
+      baseVersion,
+      channel: devMode ? "dev" : "stable",
+      platform: process.platform,
+      testMode,
+      apiUrl: apiUrlOverride,
+      blogApiUrl: blogApiUrlOverride,
+    };
     mainWindow = new BrowserWindow({
       width: 800,
       height: 700,
@@ -76,11 +96,18 @@ if (!gotTheLock) {
       webPreferences: {
         partition: devMode ? "persist:development" : undefined,
         preload: pathInfo.preload,
+        additionalArguments: [
+          `--mimiri-info=${encodeURIComponent(JSON.stringify(mimiriInfo))}`,
+        ],
       },
     });
 
     mainWindow.on("close", (evt) => {
       if (!isAppQuitting) {
+        if (testMode) {
+          app.quit();
+          return;
+        }
         evt.preventDefault();
         if (
           mainWindow &&

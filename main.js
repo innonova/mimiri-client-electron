@@ -8,7 +8,8 @@ if (isDev) {
 	require('ts-node').register({
 		transpileOnly: true,
 		compilerOptions: {
-			module: 'commonjs',
+			module: 'nodenext',
+			moduleResolution: 'nodenext',
 			target: 'es2020',
 			esModuleInterop: true,
 			allowSyntheticDefaultImports: true,

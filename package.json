@@ -1,7 +1,7 @@
 {
   "name": "mimiri-notes",
   "productName": "Mimiri Notes",
-  "version": "2.6.6",
+  "version": "2.6.7",
   "main": "main.js",
   "scripts": {
     "build": "tsc",

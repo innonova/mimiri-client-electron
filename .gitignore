@@ -10,3 +10,4 @@ bundles/
 dev-state/
 generated-sources.json
 mimiri-flatpak/
+connect.sh

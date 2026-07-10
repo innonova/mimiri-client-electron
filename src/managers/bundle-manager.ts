@@ -330,6 +330,15 @@ export class BundleManager {
     }
     this.lastActivate = Date.now();
     this.activePath = Path.join(pathInfo.bundles!, this.config.activeVersion);
+    // Drop cached responses from the previous bundle before navigating.
+    // Without this, a navigation shortly after activation (e.g. the watch
+    // dog reloading a slow-booting window) can be served the previous
+    // bundle's index.html from the HTTP cache, reviving the old version.
+    try {
+      await mainWindow.webContents.session.clearCache();
+    } catch {
+      // never let cache maintenance block activation
+    }
     mainWindow.reload();
   }
 

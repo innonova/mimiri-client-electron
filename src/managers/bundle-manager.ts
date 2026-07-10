@@ -1,7 +1,15 @@
 import { protocol, net, autoUpdater, BrowserWindow } from "electron";
 import url from "node:url";
 import Path from "node:path";
-import { mkdirSync, existsSync, readFileSync } from "node:fs";
+import { randomUUID } from "node:crypto";
+import {
+  mkdirSync,
+  existsSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  statSync,
+} from "node:fs";
 import {
   writeFile,
   mkdir,
@@ -9,6 +17,7 @@ import {
   readFile,
   rm,
   rename,
+  stat,
 } from "node:fs/promises";
 import { pathInfo } from "../path-info";
 import { baseVersion, hostVersion, releaseDate } from "../base-version";
@@ -67,6 +76,7 @@ const unzip = async (text: string): Promise<ArrayBuffer> => {
 export class BundleManager {
   private devMode: boolean;
   private doInstallUpdate: boolean = false;
+  private savePromise: Promise<void> = Promise.resolve();
   private configPath: string;
   private bundleSaveInProgress: boolean = false;
   private config: BundleConfig;
@@ -88,6 +98,19 @@ export class BundleManager {
       mkdirSync(pathInfo.bundles!);
     } catch {}
 
+    // Sweep temp dirs left behind by interrupted downloads — they must
+    // never be mistaken for (or block) a real bundle.
+    try {
+      for (const item of readdirSync(pathInfo.bundles!)) {
+        if (item.includes(".downloading")) {
+          rmSync(Path.join(pathInfo.bundles!, item), {
+            recursive: true,
+            force: true,
+          });
+        }
+      }
+    } catch {}
+
     if (existsSync(this.configPath)) {
       this.config = JSON.parse(readFileSync(this.configPath, "utf-8"));
     }
@@ -98,7 +121,10 @@ export class BundleManager {
       this.activePath = Path.join(pathInfo.bundles!, this.config.activeVersion);
       if (this.compareVersions(baseVersion, this.config.activeVersion) > 0) {
         this.activePath = pathInfo.baseBundle!;
-      } else if (!existsSync(this.activePath)) {
+      } else if (!this.bundleDirIsHealthy(this.activePath)) {
+        // Missing or partially written (e.g. an interrupted download that
+        // got promoted by an older version) — serve the base bundle rather
+        // than a broken page.
         this.activePath = pathInfo.baseBundle!;
       }
     }
@@ -189,7 +215,9 @@ export class BundleManager {
         const absPath = url
           .pathToFileURL(Path.join(this.activePath, filePath))
           .toString();
-        return net.fetch(absPath);
+        // A rejected handler surfaces as the opaque net::ERR_UNEXPECTED;
+        // report missing files as an honest 404 instead.
+        return net.fetch(absPath).catch(() => new Response(null, { status: 404 }));
       }
       return new Response(null, { status: 404 });
     });
@@ -212,6 +240,16 @@ export class BundleManager {
         await mkdir(pathInfo.bundles!, { recursive: true });
       } catch {}
       for (const item of await readdir(pathInfo.bundles!)) {
+        // In-flight/interrupted downloads and partially written bundles
+        // must not present as installed — an older client once treated a
+        // half-saved dir as installed, skipped re-downloading and kept
+        // activating a broken bundle.
+        if (item.includes(".downloading")) {
+          continue;
+        }
+        if (!this.bundleDirIsHealthy(Path.join(pathInfo.bundles!, item))) {
+          continue;
+        }
         const infoPath = Path.join(pathInfo.bundles!, item, "info.json");
         if (existsSync(infoPath)) {
           const info = JSON.parse(await readFile(infoPath, "utf-8"));
@@ -234,7 +272,8 @@ export class BundleManager {
 
   private async saveFilesRecursive(
     dir: string,
-    file: BundleFile
+    file: BundleFile,
+    written: { path: string; size: number }[]
   ): Promise<void> {
     if (file.files) {
       const subDir = Path.join(dir, file.name);
@@ -242,42 +281,136 @@ export class BundleManager {
         await mkdir(subDir);
       } catch {}
       for (const subFile of file.files) {
-        await this.saveFilesRecursive(subDir, subFile);
+        await this.saveFilesRecursive(subDir, subFile, written);
       }
     } else if (file.content) {
       const filePath = Path.join(dir, file.name);
-      await writeFile(filePath, Buffer.from(await unzip(file.content)));
+      const data = Buffer.from(await unzip(file.content));
+      await writeFile(filePath, data);
+      written.push({ path: filePath, size: data.length });
+    }
+  }
+
+  /** Confirms every written file exists on disk with the expected size. */
+  private async verifySavedBundle(
+    bundlePath: string,
+    written: { path: string; size: number }[]
+  ): Promise<void> {
+    for (const file of written) {
+      const info = await stat(file.path); // throws if missing
+      if (info.size !== file.size) {
+        throw new Error(
+          `bundle verification failed: ${file.path} has ${info.size} bytes, expected ${file.size}`
+        );
+      }
+    }
+    if (!existsSync(Path.join(bundlePath, "index.html"))) {
+      throw new Error("bundle verification failed: no index.html");
+    }
+  }
+
+  /**
+   * Whether a bundle dir on disk is complete enough to serve. Bundles saved
+   * by this version carry .bundle-manifest.json (every file + size); for
+   * bundles saved by older versions, fall back to checking that the local
+   * assets index.html references actually exist — a partially written
+   * bundle typically has index.html but is missing hashed assets.
+   */
+  bundleDirIsHealthy(dir: string): boolean {
+    try {
+      const indexPath = Path.join(dir, "index.html");
+      if (!existsSync(indexPath)) {
+        return false;
+      }
+      const manifestPath = Path.join(dir, ".bundle-manifest.json");
+      if (existsSync(manifestPath)) {
+        const manifest: { path: string; size: number }[] = JSON.parse(
+          readFileSync(manifestPath, "utf-8")
+        );
+        for (const file of manifest) {
+          const filePath = Path.join(dir, file.path);
+          if (!existsSync(filePath)) {
+            return false;
+          }
+          if (statSync(filePath).size !== file.size) {
+            return false;
+          }
+        }
+        return true;
+      }
+      const html = readFileSync(indexPath, "utf-8");
+      for (const match of html.matchAll(
+        /(?:src|href)="\/((?:assets|wasm|img)\/[^"]+)"/g
+      )) {
+        if (!existsSync(Path.join(dir, match[1]))) {
+          return false;
+        }
+      }
+      return true;
+    } catch {
+      return false;
     }
   }
 
   async save(version: string, bundle: Bundle): Promise<void> {
+    // Serialize saves: concurrent calls (e.g. an automatic update racing a
+    // manual one) used to write into the same temp dir and could promote a
+    // partially written bundle.
+    const run = this.savePromise.then(() => this.doSave(version, bundle));
+    this.savePromise = run.catch(() => {});
+    return run;
+  }
+
+  private async doSave(version: string, bundle: Bundle): Promise<void> {
     try {
       this.bundleSaveInProgress = true;
       this.useRequested = undefined;
-      const bundlePath = Path.join(pathInfo.bundles!, version + ".downloading");
-
-      try {
-        await rm(bundlePath, { recursive: true });
-      } catch {}
-
-      try {
-        await mkdir(bundlePath);
-      } catch {}
-
-      for (const file of bundle.files) {
-        await this.saveFilesRecursive(bundlePath, file);
-      }
-
-      await writeFile(
-        Path.join(bundlePath, "info.json"),
-        JSON.stringify(
-          { ...bundle, files: undefined, signatures: undefined },
-          undefined,
-          "  "
-        )
+      // Unique temp dir per download, so no two saves can ever collide.
+      const bundlePath = Path.join(
+        pathInfo.bundles!,
+        `${version}.downloading-${randomUUID()}`
       );
 
-      await rename(bundlePath, Path.join(pathInfo.bundles!, version));
+      try {
+        await mkdir(bundlePath, { recursive: true });
+
+        const written: { path: string; size: number }[] = [];
+        for (const file of bundle.files) {
+          await this.saveFilesRecursive(bundlePath, file, written);
+        }
+
+        await writeFile(
+          Path.join(bundlePath, "info.json"),
+          JSON.stringify(
+            { ...bundle, files: undefined, signatures: undefined },
+            undefined,
+            "  "
+          )
+        );
+        // Manifest of everything written, so later health checks (startup,
+        // activation, getInstalledVersions) can detect a damaged bundle.
+        await writeFile(
+          Path.join(bundlePath, ".bundle-manifest.json"),
+          JSON.stringify(
+            written.map((file) => ({
+              path: Path.relative(bundlePath, file.path),
+              size: file.size,
+            }))
+          )
+        );
+
+        // Only verified bundles get promoted to their real name.
+        await this.verifySavedBundle(bundlePath, written);
+
+        const finalPath = Path.join(pathInfo.bundles!, version);
+        await rm(finalPath, { recursive: true, force: true });
+        await rename(bundlePath, finalPath);
+      } catch (ex) {
+        try {
+          await rm(bundlePath, { recursive: true, force: true });
+        } catch {}
+        throw ex;
+      }
 
       if (this.useRequested) {
         const { version, mainWindow, noActivate } = this.useRequested;
@@ -329,7 +462,18 @@ export class BundleManager {
       this.activateCount = 0;
     }
     this.lastActivate = Date.now();
-    this.activePath = Path.join(pathInfo.bundles!, this.config.activeVersion);
+    this.activePath =
+      this.config.activeVersion === "base"
+        ? pathInfo.baseBundle!
+        : Path.join(pathInfo.bundles!, this.config.activeVersion);
+    if (
+      this.config.activeVersion !== "base" &&
+      !this.bundleDirIsHealthy(this.activePath)
+    ) {
+      // Never point the window at a missing/partial bundle — the base
+      // bundle always exists and keeps the app usable for a re-update.
+      this.activePath = pathInfo.baseBundle!;
+    }
     // Drop cached responses from the previous bundle before navigating.
     // Without this, a navigation shortly after activation (e.g. the watch
     // dog reloading a slow-booting window) can be served the previous

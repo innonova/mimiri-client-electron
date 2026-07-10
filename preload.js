@@ -12,12 +12,14 @@ function isAppImage() {
 	return process.platform === 'linux' && !!process.env.APPIMAGE;
 }
 
+// Store detection happens in the main process (sandboxed preloads cannot
+// read /.flatpak-info) and arrives via the mimiri-info argument.
 function isFlatHub() {
-	return false;
+	return mimiriInfo?.isFlatHub ?? false;
 }
 
 function isSnapStore() {
-	return false;
+	return mimiriInfo?.isSnapStore ?? false;
 }
 
 function isTarGz() {

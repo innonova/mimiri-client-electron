@@ -13,6 +13,9 @@ import {
   updateUrlOverride,
   updateKeyOverride,
   userDataDirOverride,
+  fakeStoreOverride,
+  detectFlatHub,
+  detectSnapStore,
 } from "./runtime-config";
 import { baseVersion, hostVersion } from "./base-version";
 
@@ -82,6 +85,16 @@ if (!gotTheLock) {
       blogApiUrl: blogApiUrlOverride,
       updateUrl: updateUrlOverride,
       updateKey: updateKeyOverride,
+      // Detected in the main process — sandboxed preloads cannot read
+      // /.flatpak-info. The fake-store override is test-mode only.
+      isFlatHub:
+        testMode && fakeStoreOverride
+          ? fakeStoreOverride === "flathub"
+          : detectFlatHub(),
+      isSnapStore:
+        testMode && fakeStoreOverride
+          ? fakeStoreOverride === "snapstore"
+          : detectSnapStore(),
     };
     mainWindow = new BrowserWindow({
       width: 800,

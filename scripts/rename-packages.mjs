@@ -8,14 +8,25 @@ const run = async () => {
 		const packageJson = JSON.parse(readFileSync('./package.json'));
 
 		if (process.platform === 'linux') {
+			// A missed artifact must fail the build; by default shelljs only logs
+			// (the 2.6.8 arm64 AppImage silently never made it into dist-bin).
+			shell.config.fatal = true;
+
 			let arch = 'amd64';
 			if (process.arch === 'arm64') {
 				arch = 'arm64';
 			}
 
+			// electron-builder appends the arch to the AppImage name on arm64
+			// (Mimiri Notes-2.6.8-arm64.AppImage) but not on x64.
+			const appImageSrc =
+				process.arch === 'arm64'
+					? `./dist/Mimiri Notes-${packageJson.version}-arm64.AppImage`
+					: `./dist/Mimiri Notes-${packageJson.version}.AppImage`;
+
 			shell.mv('./dist/mimiri-notes.tar.gz', `./dist-bin/mimiri-notes_${packageJson.version}_${arch}.tar.gz`);
 			shell.mv(`./dist/mimiri-notes_${packageJson.version}_${arch}.snap`, `./dist-bin/mimiri-notes_${packageJson.version}_${arch}.snap`);
-			shell.mv(`./dist/Mimiri Notes-${packageJson.version}.AppImage`, `./dist-bin/mimiri-notes_${packageJson.version}_${arch}.AppImage`);
+			shell.mv(appImageSrc, `./dist-bin/mimiri-notes_${packageJson.version}_${arch}.AppImage`);
 			shell.mv('./mimiri-flatpak/io.mimiri.notes.flatpak', `./dist-bin/io.mimiri.notes_${packageJson.version}_${arch}.flatpak`);
 
 			writeFileSync('./artifacts.json', JSON.stringify([

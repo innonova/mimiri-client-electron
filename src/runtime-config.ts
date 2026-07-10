@@ -13,6 +13,12 @@ export const apiUrlOverride: string | undefined =
 export const blogApiUrlOverride: string | undefined =
   process.env.MIMIRI_BLOG_API_URL || undefined;
 
+export const updateUrlOverride: string | undefined =
+  process.env.MIMIRI_UPDATE_URL || undefined;
+
+export const updateKeyOverride: string | undefined =
+  process.env.MIMIRI_UPDATE_KEY || undefined;
+
 export const userDataDirOverride: string | undefined = userDataDirArg
   ? path.resolve(userDataDirArg.substring(userDataDirPrefix.length))
   : undefined;

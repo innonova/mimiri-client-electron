@@ -49,6 +49,8 @@ if (mimiriInfo?.testMode) {
 			platform: mimiriInfo.platform,
 			apiUrl: mimiriInfo.apiUrl,
 			blogApiUrl: mimiriInfo.blogApiUrl,
+			updateUrl: mimiriInfo.updateUrl,
+			updateKey: mimiriInfo.updateKey,
 		}
 	)
 }

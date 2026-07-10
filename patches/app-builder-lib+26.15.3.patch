@@ -1,0 +1,19 @@
+diff --git a/node_modules/app-builder-lib/out/util/electronGet.js b/node_modules/app-builder-lib/out/util/electronGet.js
+index a941f9d..7ffd14e 100644
+--- a/node_modules/app-builder-lib/out/util/electronGet.js
++++ b/node_modules/app-builder-lib/out/util/electronGet.js
+@@ -138,8 +138,12 @@ async function extractArchive(file, dir) {
+         if (file.endsWith(".tar.gz") || file.endsWith(".tgz")) {
+             await tar.extract({ file, cwd: tmpDir, strip: 1 });
+         }
+-        else if (file.endsWith(".tar.xz") || file.endsWith(".txz")) {
+-            // node-tar cannot decompress xz, so use 7za to turn the .tar.xz into a .tar, then extract that tar.
++        else if (file.endsWith(".tar.xz") || file.endsWith(".txz") || file.endsWith(".tar.7z")) {
++            // node-tar cannot decompress xz/7z, so use 7za to turn the .tar.xz/.tar.7z into a .tar, then
++            // extract that tar. Without this, .tar.7z files (e.g. the snap template
++            // snap-template-electron-4.0-2-amd64.tar.7z) fall into the plain .7z branch below, which only
++            // strips the 7z layer and leaves the inner .tar in the toolset dir — the snap then ships the
++            // tar itself instead of its contents and fails at launch on the missing desktop-init.sh.
+             const cmd7za = await (0, _7zip_1.getPath7za)();
+             const xzOutDir = `${tmpDir}.xz`;
+             await fs.rm(xzOutDir, { recursive: true, force: true });

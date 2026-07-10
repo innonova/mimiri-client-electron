@@ -6,6 +6,7 @@ export class WatchDog {
   private reloadCount: number = 0;
   private lastOk: number = 0;
   private startTime: number = 0;
+  private graceUntil: number = 0;
   private interval?: NodeJS.Timeout;
 
   init(startUrl: string, mainWindow: BrowserWindow): void {
@@ -42,8 +43,24 @@ export class WatchDog {
     }
   }
 
+  /**
+   * Suppresses reload/loadURL corrections for a while, keeping only the
+   * renderer pings. Used around deliberate navigations (bundle activation):
+   * a slow machine can take longer than the stale threshold to boot the new
+   * bundle, and a watch dog navigation fired mid-boot interrupts it — the
+   * doubled boot can crash the renderer and leave a dead page.
+   */
+  grace(ms: number): void {
+    this.graceUntil = Date.now() + ms;
+  }
+
   private check(): void {
     if (!this.mainWindow || !this.startUrl) {
+      return;
+    }
+
+    if (Date.now() < this.graceUntil) {
+      this.mainWindow.webContents.send("watch-dog-check");
       return;
     }
 

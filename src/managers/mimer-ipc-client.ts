@@ -129,11 +129,17 @@ export class MimerIpcClient {
 
     ipcMain.on("bundle-use", (e, version, noActivate) => {
       if (!this.validateSender(e.senderFrame)) return;
+      // Activation reloads the window; give the new bundle time to boot on
+      // slow machines before the watch dog considers correcting course.
+      if (!noActivate) {
+        this.watchDog.grace(30_000);
+      }
       return this.bundleManager.use(version, this.mainWindow!, noActivate);
     });
 
     ipcMain.on("bundle-activate", (e) => {
       if (!this.validateSender(e.senderFrame)) return;
+      this.watchDog.grace(30_000);
       return this.bundleManager.activate(this.mainWindow!);
     });
 

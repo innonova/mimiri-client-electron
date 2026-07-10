@@ -10,6 +10,8 @@ import {
   testMode,
   apiUrlOverride,
   blogApiUrlOverride,
+  updateUrlOverride,
+  updateKeyOverride,
   userDataDirOverride,
 } from "./runtime-config";
 import { baseVersion, hostVersion } from "./base-version";
@@ -78,6 +80,8 @@ if (!gotTheLock) {
       testMode,
       apiUrl: apiUrlOverride,
       blogApiUrl: blogApiUrlOverride,
+      updateUrl: updateUrlOverride,
+      updateKey: updateKeyOverride,
     };
     mainWindow = new BrowserWindow({
       width: 800,

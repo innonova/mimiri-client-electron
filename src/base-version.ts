@@ -4,9 +4,9 @@ export interface BaseVersion {
 	releaseDate: string;
 }
 
-export const baseVersion = '2.6.8';
-export const hostVersion = '2.6.14';
-export const releaseDate = '2026-07-11T18:08:40.621Z';
+export const baseVersion = '2.6.9';
+export const hostVersion = '2.6.15';
+export const releaseDate = '2026-07-11T19:08:42.131Z';
 
 export default {
 	baseVersion,

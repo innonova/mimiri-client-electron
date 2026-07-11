@@ -50,6 +50,7 @@ if (mimiriInfo?.testMode) {
 			channel: mimiriInfo.channel,
 			platform: mimiriInfo.platform,
 			apiUrl: mimiriInfo.apiUrl,
+			useDevApi: mimiriInfo.useDevApi,
 			blogApiUrl: mimiriInfo.blogApiUrl,
 			updateUrl: mimiriInfo.updateUrl,
 			updateKey: mimiriInfo.updateKey,

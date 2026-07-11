@@ -9,6 +9,7 @@ import { LogManager } from "./managers/log-manager";
 import {
   testMode,
   apiUrlOverride,
+  useDevApi,
   blogApiUrlOverride,
   updateUrlOverride,
   updateKeyOverride,
@@ -82,6 +83,7 @@ if (!gotTheLock) {
       platform: process.platform,
       testMode,
       apiUrl: apiUrlOverride,
+      useDevApi,
       blogApiUrl: blogApiUrlOverride,
       updateUrl: updateUrlOverride,
       updateKey: updateKeyOverride,

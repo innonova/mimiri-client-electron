@@ -11,6 +11,14 @@ export const testMode: boolean = process.env.APP_TEST_MODE === "1";
 export const apiUrlOverride: string | undefined =
   process.env.MIMIRI_API_URL || undefined;
 
+/**
+ * Test-mode toggle: make the renderer use its compiled-in dev API host and
+ * dev server key pair instead of the production ones. A boolean toggle
+ * between baked-in key pairs on purpose — accepting an arbitrary key from
+ * the environment would let anyone who controls the env re-key the client.
+ */
+export const useDevApi: boolean = process.env.MIMIRI_USE_DEV_API === "1";
+
 export const blogApiUrlOverride: string | undefined =
   process.env.MIMIRI_BLOG_API_URL || undefined;
 

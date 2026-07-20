@@ -89,6 +89,15 @@
   </screenshots>
 
   <releases>
+    <release version="2.6.17" date="2026-07-20">
+      <description>
+        <p>Added Markdown support</p>
+				<p>Added Import and Export</p>
+				<p>Added Chinese Translation</p>
+				<p>Added German Translation</p>
+				<p>Added Danish Translation</p>
+      </description>
+    </release>
     <release version="2.5.72" date="2025-10-08">
       <description>
         <p>Proper Wayland support</p>

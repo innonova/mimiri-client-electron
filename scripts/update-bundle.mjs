@@ -44,6 +44,32 @@ const verify = async (name, data) => {
 	);
 };
 
+const updateMetainfo = async (version) => {
+	const metainfoPath = './io.mimiri.notes.metainfo.xml';
+	let metainfo = (await readFile(metainfoPath)).toString();
+	const topRelease = /<release version="([^"]+)"/.exec(metainfo);
+	if (!topRelease) {
+		console.error('No <release> entry found in io.mimiri.notes.metainfo.xml');
+		process.exit(1);
+	}
+	if (topRelease[1] === version) {
+		return;
+	}
+	const date = new Date().toISOString().substring(0, 10);
+	const entry = [
+		`    <release version="${version}" date="${date}">`,
+		'      <description>',
+		'        <p>Fixes and minor improvements</p>',
+		'      </description>',
+		'    </release>',
+		'',
+	].join('\n');
+	metainfo = metainfo.replace(/(<releases>\r?\n)/, `$1${entry}`);
+	await writeFile(metainfoPath, metainfo);
+	console.log(`Added release ${version} (${date}) to io.mimiri.notes.metainfo.xml`);
+	console.log('=> Edit the release description before committing');
+};
+
 const execute = async () => {
 	try {
 		const keyName = '2024101797F6C918';
@@ -82,6 +108,7 @@ export default {
 } as BaseVersion;`;
 			await writeFile('./src/base-version.ts', baseVersionTs);
 
+			await updateMetainfo(pack.version);
 
 		} else {
 			console.error('Bundle verification failed');

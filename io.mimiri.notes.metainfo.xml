@@ -89,9 +89,9 @@
   </screenshots>
 
   <releases>
-    <release version="2.6.17" date="2026-07-20">
+    <release version="2.6.19" date="2026-08-01">
       <description>
-        <p>Added Markdown support</p>
+        <p>Added Markdown support (including visual editor)</p>
 				<p>Added Import and Export</p>
 				<p>Added Chinese Translation</p>
 				<p>Added German Translation</p>

@@ -89,11 +89,12 @@
   </screenshots>
 
   <releases>
-    <release version="2.6.19" date="2026-08-01">
+    <release version="2.6.20" date="2026-08-02">
       <description>
         <p>Added Markdown support (including visual editor)</p>
 				<p>Added Import and Export</p>
-				<p>Added Chinese Translation</p>
+				<p>Added Simplified Chinese Translation</p>
+				<p>Added Traditional Chinese Translation</p>
 				<p>Added German Translation</p>
 				<p>Added Danish Translation</p>
       </description>

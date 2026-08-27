@@ -67,6 +67,7 @@ contextBridge.exposeInMainWorld(
 			show: () => ipcRenderer.send('menu-show'),
 			hide: () => ipcRenderer.send('menu-hide'),
 			showDevTools: () => ipcRenderer.send('menu-show-dev-tools'),
+			nativeAction: (action) => ipcRenderer.send('menu-native-action', action),
 			onToggleScreenSharing: (callback) => ipcRenderer.on('toggle-screen-sharing', () => callback()),
 			onToggleOpenAtLogin: (callback) => ipcRenderer.on('toggle-open-at-login', () => callback()),
 			setAppMenu: (value) => ipcRenderer.send('set-app-menu', value),

@@ -9,11 +9,15 @@ export interface MenuItemConfig {
   checked?: boolean;
   enabled?: boolean;
   shortcut?: string;
+  /** Electron built-in role (e.g. "hide", "paste"); when set, the OS handles the item natively */
+  role?: string;
   submenu?: MenuItemConfig[];
 }
 
 export interface AppMenuConfig {
-  title: string;
+  title?: string;
+  /** Electron built-in top-level role (e.g. "windowMenu") */
+  role?: string;
   submenu?: MenuItemConfig[];
 }
 
@@ -117,23 +121,27 @@ export class MenuManager {
       const menu = Menu.buildFromTemplate(
         value.map((item) => ({
           label: item.title,
+          role: item.role as any,
           submenu: item.submenu?.map((sub) => ({
+            role: sub.role as any,
             label: sub.title,
             type: sub.type || "normal",
             checked: sub.checked,
             enabled: sub.enabled,
             accelerator: sub.shortcut?.replace(/Ctrl/, "CommandOrControl"),
-            click: () => {
-              if (sub.id === "quit") {
-                app.quit();
-              } else if (sub.id === "show-dev-tools") {
-                if (this.mainWindow) {
-                  this.mainWindow.webContents.openDevTools();
-                }
-              } else {
-                this.ipcClient.menuItemActivated(sub.id);
-              }
-            },
+            click: sub.role
+              ? undefined
+              : () => {
+                  if (sub.id === "quit") {
+                    app.quit();
+                  } else if (sub.id === "show-dev-tools") {
+                    if (this.mainWindow) {
+                      this.mainWindow.webContents.openDevTools();
+                    }
+                  } else {
+                    this.ipcClient.menuItemActivated(sub.id);
+                  }
+                },
           })),
         }))
       );

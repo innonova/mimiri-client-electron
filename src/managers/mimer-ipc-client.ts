@@ -107,6 +107,25 @@ export class MimerIpcClient {
       }
     });
 
+    ipcMain.on("menu-native-action", (e, action: string) => {
+      if (!this.validateSender(e.senderFrame)) return;
+      if (!this.mainWindow) return;
+      switch (action) {
+        case "cut":
+          this.mainWindow.webContents.cut();
+          break;
+        case "copy":
+          this.mainWindow.webContents.copy();
+          break;
+        case "paste":
+          this.mainWindow.webContents.paste();
+          break;
+        case "select-all":
+          this.mainWindow.webContents.selectAll();
+          break;
+      }
+    });
+
     ipcMain.handle("settings-load", (e) => {
       if (!this.validateSender(e.senderFrame)) return null;
       return this.settingsManager?.load();

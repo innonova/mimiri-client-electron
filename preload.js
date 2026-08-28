@@ -101,6 +101,9 @@ contextBridge.exposeInMainWorld(
 		session: {
 			set: (name, value) => ipcRenderer.invoke('session-set-value', name, value),
 			get: (name) => ipcRenderer.invoke('session-get-value', name),
+			setPersistent: (name, value) => ipcRenderer.invoke('session-set-persistent', name, value),
+			getPersistent: (name) => ipcRenderer.invoke('session-get-persistent', name),
+			clearPersistent: (name) => ipcRenderer.invoke('session-clear-persistent', name),
 		},
 		fileSystem: {
 			loadFile: (options) => ipcRenderer.invoke('filesystem-load-file', options),
@@ -112,6 +115,8 @@ contextBridge.exposeInMainWorld(
 			setAutoStart: (enabled) => ipcRenderer.invoke('os-set-autostart', enabled),
 			getAutoStart: () => ipcRenderer.invoke('os-get-autostart'),
 			rules: () => ipcRenderer.invoke('os-rules'),
+			canPromptTouchId: () => ipcRenderer.invoke('os-can-prompt-touch-id'),
+			promptTouchId: (reason) => ipcRenderer.invoke('os-prompt-touch-id', reason),
 		},
 		platform: process.platform,
 		isFlatpak: isFlatpak(),

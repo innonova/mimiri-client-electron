@@ -89,10 +89,12 @@
   </screenshots>
 
   <releases>
-    <release version="2.6.21" date="2026-08-28">
+    <release version="2.6.22" date="2026-08-28">
       <description>
-        <p>Fix macOS copy/paste</p>
-				<p>Fix macOS window management</p>
+        <p>Fix copy and paste in the login and other text fields on macOS</p>
+        <p>Add the standard macOS application menu entries and the Window menu</p>
+        <p>Add optional "Stay signed in with Touch ID" on macOS</p>
+        <p>Explain on the login screen that closing the window keeps you signed in while quitting signs you out</p>
       </description>
     </release>
     <release version="2.6.20" date="2026-08-02">

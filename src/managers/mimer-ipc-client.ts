@@ -1,4 +1,13 @@
-import { app, ipcMain, BrowserWindow } from "electron";
+import {
+  app,
+  ipcMain,
+  BrowserWindow,
+  safeStorage,
+  systemPreferences,
+} from "electron";
+import fs from "fs";
+import path from "path";
+import { pathInfo } from "../path-info";
 import { SettingManager } from "./settings-manager";
 import { MenuManager } from "./menu-manager";
 import { WindowManager } from "./window-manager";
@@ -78,6 +87,15 @@ export class MimerIpcClient {
     if (this.mainWindow) {
       this.mainWindow.webContents.send("toggle-open-at-login");
     }
+  }
+
+  /** Path for a persistent session value; only simple names are accepted. */
+  private persistentSessionFile(name: unknown): string | undefined {
+    if (typeof name !== "string" || !/^[a-z0-9-]{1,64}$/.test(name)) {
+      return undefined;
+    }
+    const dir = pathInfo.settings;
+    return dir ? path.join(dir, `${name}.session`) : undefined;
   }
 
   private setupIpcHandlers(): void {
@@ -222,6 +240,53 @@ export class MimerIpcClient {
       return this.session[name];
     });
 
+    // Persistent session values survive quitting the app. They are wrapped
+    // with Electron's safeStorage (macOS: a key in the user's login
+    // keychain; other platforms: DPAPI / libsecret) and stored next to the
+    // settings. The renderer decides what to put here and gates the
+    // restore behind Touch ID; this side only guarantees the at-rest
+    // wrapping, refusing to store anything when no OS-backed encryption
+    // is available.
+    ipcMain.handle("session-set-persistent", (e, name, value) => {
+      if (!this.validateSender(e.senderFrame)) return false;
+      const file = this.persistentSessionFile(name);
+      if (!file || !safeStorage.isEncryptionAvailable()) return false;
+      try {
+        fs.mkdirSync(path.dirname(file), { recursive: true });
+        const tmp = `${file}.tmp`;
+        fs.writeFileSync(tmp, safeStorage.encryptString(String(value)), {
+          mode: 0o600,
+        });
+        fs.renameSync(tmp, file);
+        return true;
+      } catch (err) {
+        console.error("Failed to persist session value", err);
+        return false;
+      }
+    });
+
+    ipcMain.handle("session-get-persistent", (e, name) => {
+      if (!this.validateSender(e.senderFrame)) return undefined;
+      const file = this.persistentSessionFile(name);
+      if (!file || !fs.existsSync(file)) return undefined;
+      try {
+        if (!safeStorage.isEncryptionAvailable()) return undefined;
+        return safeStorage.decryptString(fs.readFileSync(file));
+      } catch (err) {
+        console.error("Failed to read persisted session value", err);
+        return undefined;
+      }
+    });
+
+    ipcMain.handle("session-clear-persistent", (e, name) => {
+      if (!this.validateSender(e.senderFrame)) return;
+      const file = this.persistentSessionFile(name);
+      if (file) {
+        fs.rmSync(file, { force: true });
+        fs.rmSync(`${file}.tmp`, { force: true });
+      }
+    });
+
     ipcMain.handle("filesystem-load-file", (e, options) => {
       if (!this.validateSender(e.senderFrame)) return;
       return this._osInterop?.loadFile(options);
@@ -255,6 +320,24 @@ export class MimerIpcClient {
     ipcMain.handle("os-rules", (e) => {
       if (!this.validateSender(e.senderFrame)) return;
       return this._osInterop?.platformRules();
+    });
+
+    ipcMain.handle("os-can-prompt-touch-id", (e) => {
+      if (!this.validateSender(e.senderFrame)) return false;
+      return (
+        process.platform === "darwin" && systemPreferences.canPromptTouchID()
+      );
+    });
+
+    ipcMain.handle("os-prompt-touch-id", async (e, reason) => {
+      if (!this.validateSender(e.senderFrame)) return false;
+      if (process.platform !== "darwin") return false;
+      try {
+        await systemPreferences.promptTouchID(String(reason ?? "continue"));
+        return true;
+      } catch {
+        return false; // cancelled, failed, or no Touch ID
+      }
     });
   }
 }

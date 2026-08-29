@@ -2,12 +2,14 @@ import {
   app,
   ipcMain,
   BrowserWindow,
+  dialog,
   safeStorage,
   systemPreferences,
 } from "electron";
 import fs from "fs";
 import path from "path";
 import { pathInfo } from "../path-info";
+import { testMode, fakeTouchIdOverride } from "../runtime-config";
 import { SettingManager } from "./settings-manager";
 import { MenuManager } from "./menu-manager";
 import { WindowManager } from "./window-manager";
@@ -322,8 +324,11 @@ export class MimerIpcClient {
       return this._osInterop?.platformRules();
     });
 
+    const fakeTouchId = testMode ? fakeTouchIdOverride : undefined;
+
     ipcMain.handle("os-can-prompt-touch-id", (e) => {
       if (!this.validateSender(e.senderFrame)) return false;
+      if (fakeTouchId) return true;
       return (
         process.platform === "darwin" && systemPreferences.canPromptTouchID()
       );
@@ -331,6 +336,20 @@ export class MimerIpcClient {
 
     ipcMain.handle("os-prompt-touch-id", async (e, reason) => {
       if (!this.validateSender(e.senderFrame)) return false;
+      if (fakeTouchId === "allow") return true;
+      if (fakeTouchId === "deny") return false;
+      if (fakeTouchId === "dialog") {
+        const { response } = await dialog.showMessageBox(this.mainWindow!, {
+          type: "info",
+          title: "Touch ID (simulated)",
+          message: `"Mimiri Notes" is trying to ${String(reason ?? "continue")}.`,
+          detail: "Test-mode stand-in for the Touch ID prompt.",
+          buttons: ["Use Touch ID", "Cancel"],
+          defaultId: 0,
+          cancelId: 1,
+        });
+        return response === 0;
+      }
       if (process.platform !== "darwin") return false;
       try {
         await systemPreferences.promptTouchID(String(reason ?? "continue"));

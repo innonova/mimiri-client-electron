@@ -89,7 +89,7 @@
   </screenshots>
 
   <releases>
-    <release version="2.6.22" date="2026-08-28">
+    <release version="2.6.23" date="2026-08-29">
       <description>
         <p>Fix copy and paste in the login and other text fields on macOS</p>
         <p>Add the standard macOS application menu entries and the Window menu</p>

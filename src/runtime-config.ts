@@ -28,6 +28,15 @@ export const updateUrlOverride: string | undefined =
 export const updateKeyOverride: string | undefined =
   process.env.MIMIRI_UPDATE_KEY || undefined;
 
+/**
+ * Test-mode stand-in for Touch ID (VMs have no biometrics): "allow" and
+ * "deny" resolve the prompt immediately; "dialog" shows a message box in
+ * its place so a recording conveys where the prompt sits.
+ */
+export const fakeTouchIdOverride: "allow" | "deny" | "dialog" | undefined = (
+  ["allow", "deny", "dialog"] as const
+).find((v) => v === process.env.MIMIRI_FAKE_TOUCH_ID);
+
 /** Test-mode override for store detection: "flathub" | "snapstore". */
 export const fakeStoreOverride: string | undefined =
   process.env.MIMIRI_FAKE_STORE || undefined;
